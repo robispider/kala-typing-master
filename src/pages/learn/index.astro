@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+import T from '../../components/T.astro';
+import LayoutCards from '../../components/LayoutCards.astro';
+---
+<Base title="Learn · Kala Learn">
+  <section class="wrap head">
+    <p class="eyebrow"><T en="Learn" bn="শিখুন" /></p>
+    <h1><T en="Pick a keyboard layout" bn="একটি কিবোর্ড লেআউট বেছে নিন" /></h1>
+    <p class="muted lede">
+      <T
+        en="Not sure? If you are new to Bangla typing, start with Kala Goti: familiar UniJoy-style vowels on keys arranged for less effort. If you already type UniJoy, keep your habits with UniJoy. Your system keyboard stays on English — Kala does the Bangla."
+        bn="নিশ্চিত নন? বাংলা টাইপিংয়ে নতুন হলে Kala গতি দিয়ে শুরু করুন: পরিচিত ইউনিজয়-ধাঁচের স্বরবর্ণ, কম পরিশ্রমে সাজানো কি। আগে থেকে ইউনিজয়ে লিখলে ইউনিজয়ই রাখুন। আপনার কম্পিউটারের কিবোর্ড ইংরেজিতেই থাকবে — বাংলা লিখবে Kala।"
+      />
+    </p>
+  </section>
+  <section class="wrap">
+    <LayoutCards />
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: 48px;
+    padding-bottom: 24px;
+  }
+  .lede {
+    max-width: 46em;
+    font-size: 1.05rem;
+  }
+</style>

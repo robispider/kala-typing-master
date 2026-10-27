@@ -1,0 +1,128 @@
+---
+import T from './T.astro';
+import { layouts, paths } from '../lib/catalog.ts';
+import { keyboardHtml } from '../lib/keyboard.ts';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const badges: Record<string, { en: string; bn: string }> = {
+  'kala-goti': { en: 'Recommended', bn: 'প্রস্তাবিত' },
+  'kala-jhor': { en: 'Fewest keystrokes', bn: 'সবচেয়ে কম কি-চাপ' },
+  unijoy: { en: 'Widely used', bn: 'বহুল ব্যবহৃত' },
+  qwerty: { en: 'English', bn: 'ইংরেজি' },
+};
+---
+<div class="cards">
+  {layouts.map((l) => (
+    <a class="lcard card" href={`${base}learn/${l.id}/`} data-layout-card={l.id}>
+      <div class="top">
+        <span class="pill">{badges[l.id] && <T en={badges[l.id].en} bn={badges[l.id].bn} />}</span>
+        <span class="status" data-status></span>
+      </div>
+      <h3><T en={l.name.en} bn={l.name.bn} /></h3>
+      {l.tagline && <p class="muted"><T en={l.tagline.en} bn={l.tagline.bn} /></p>}
+      <div class="mini" set:html={keyboardHtml(l)} aria-hidden="true" />
+      <div class="meta">
+        <span><T en={`${paths[l.id].groups.length} key steps`} bn={`${paths[l.id].groups.length}টি কি-ধাপ`} /></span>
+        {l.style && <span>· <T en={l.style.name.en} bn={l.style.name.bn} /></span>}
+      </div>
+      <div class="progress" data-progress><span></span></div>
+    </a>
+  ))}
+</div>
+
+<script>
+  import { journey } from '../lib/catalog.ts';
+  import { load } from '../lib/store.ts';
+  import { both } from '../lib/i18n.ts';
+  const p = load();
+  document.querySelectorAll<HTMLElement>('[data-layout-card]').forEach((card) => {
+    const id = card.dataset.layoutCard!;
+    const done = p.layouts[id]?.completed.length ?? 0;
+    const total = journey(id).length;
+    if (!done) return;
+    card.querySelector<HTMLElement>('[data-progress] span')!.style.width = `${(100 * done) / total}%`;
+    card.querySelector('[data-status]')!.innerHTML = both({ en: `${done}/${total} done`, bn: `${done}/${total} সম্পন্ন` });
+    if (p.layout === id) card.classList.add('current');
+  });
+</script>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+    gap: 16px;
+  }
+  .lcard {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .lcard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--line-2);
+  }
+  .lcard.current {
+    border-color: var(--accent);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 26px;
+    margin-bottom: 10px;
+  }
+  .status {
+    font-size: 0.8rem;
+    color: var(--ok);
+    font-weight: 600;
+  }
+  h3 {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+  .lcard p {
+    font-size: 0.92rem;
+    min-height: 3em;
+  }
+  .mini {
+    margin: 4px 0 14px;
+    pointer-events: none;
+  }
+  .mini :global(.kb) {
+    --u: 15.5px;
+    padding: 5px;
+    border-radius: 8px;
+    width: 100%;
+  }
+  .mini :global(.key .qw),
+  .mini :global(.key .up),
+  .mini :global(.key .mod) {
+    display: none;
+  }
+  .mini :global(.key .lo) {
+    font-size: 9px;
+  }
+  .meta {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: auto;
+  }
+  .progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--ok);
+  }
+</style>

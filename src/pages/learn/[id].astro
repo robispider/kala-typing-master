@@ -1,0 +1,342 @@
+---
+import Base from '../../layouts/Base.astro';
+import T from '../../components/T.astro';
+import { display, journey, layouts, paths, unitMap, toBnDigits } from '../../lib/catalog.ts';
+import { keyboardHtml } from '../../lib/keyboard.ts';
+
+export function getStaticPaths() {
+  return layouts.map((l) => ({ params: { id: l.id } }));
+}
+
+const { id } = Astro.params;
+const layout = layouts.find((l) => l.id === id)!;
+const path = paths[id];
+const steps = journey(id);
+const units = unitMap(layout.language);
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const moduleAt = (unitIds: string[]) => path.modules.filter((m) => m.targetUnits.some((u) => unitIds.includes(u)));
+---
+<Base title={`${layout.name.en} · Kala Learn`}>
+  <section class="wrap head">
+    <a class="back muted" href={`${base}learn/`}>← <T en="All layouts" bn="সব লেআউট" /></a>
+    <div class="title-row">
+      <div>
+        <p class="eyebrow">{layout.family ?? (layout.language === 'en' ? 'English' : 'Bangla')}{layout.meaning && ` · ${layout.meaning}`}</p>
+        <h1><T en={layout.name.en} bn={layout.name.bn} /></h1>
+        {layout.tagline && <p class="lede muted"><T en={layout.tagline.en} bn={layout.tagline.bn} /></p>}
+      </div>
+      <a class="btn primary big" id="cta" href={`${base}practice/${id}/`}><T en="Start" bn="শুরু করুন" /></a>
+    </div>
+  </section>
+
+  <section class="wrap grid">
+    <ol class="journey" aria-label="Learning path">
+      {steps.map((s) => (
+        <li class="jstep" data-step={s.id} data-kind={s.kind}>
+          <a href={`${base}practice/${id}/?step=${s.id}`}>
+            <span class="node" aria-hidden="true"><span class="n">{s.kind === 'group' ? s.id.slice(1) : s.kind === 'orientation' ? '★' : '◆'}</span></span>
+            <span class="body">
+              <span class="t"><T en={s.title.en} bn={s.title.bn} /></span>
+              {s.kind === 'group' ? (
+                <span class="glyphs bn">
+                  {s.units.map((u) => <span class="glyph" data-unit={u} title={units.get(u)?.name.en}>{display(units.get(u)?.text ?? u)}</span>)}
+                </span>
+              ) : (
+                <span class="sub muted"><T en={s.subtitle.en} bn={s.subtitle.bn} /></span>
+              )}
+              {s.kind === 'group' && moduleAt(s.units).length > 0 && (
+                <span class="mods">
+                  {moduleAt(s.units).map((m) => <span class="pill"><T en={m.title.en} bn={m.title.bn} /></span>)}
+                </span>
+              )}
+            </span>
+            <span class="state" data-state></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <aside class="side">
+      <div class="card panel">
+        <h3><T en="The keyboard" bn="কিবোর্ড" /></h3>
+        <p class="muted small"><T en="Colours show which finger presses each key. Upper legends need Shift." bn="রং দেখায় কোন আঙুলে কোন কি চাপবেন। উপরের অক্ষরের জন্য শিফট লাগে।" /></p>
+        <div class="kbwrap" set:html={keyboardHtml(layout).replace('class="kb"', 'class="kb fingers"')} />
+        <div class="legend small">
+          <span><span class="dot f-lp"></span><T en="little" bn="কনিষ্ঠা" /></span>
+          <span><span class="dot f-lr"></span><T en="ring" bn="অনামিকা" /></span>
+          <span><span class="dot f-lm"></span><T en="middle" bn="মধ্যমা" /></span>
+          <span><span class="dot f-li"></span><T en="index" bn="তর্জনী" /></span>
+          <span><span class="dot f-th"></span><T en="thumb" bn="বৃদ্ধাঙ্গুল" /></span>
+        </div>
+      </div>
+      {layout.howToType && (
+        <div class="card panel">
+          <h3><T en="How it types" bn="কীভাবে লিখবেন" /></h3>
+          <ul class="rules">
+            {layout.howToType.en.map((rule, i) => <li><T en={rule} bn={layout.howToType!.bn[i]} /></li>)}
+          </ul>
+          {layout.howToType.examples && (
+            <div class="examples">
+              {layout.howToType.examples.map((e) => (
+                <div class="ex">
+                  <span class="bn word">{e.text}</span>
+                  <span class="keys">{e.keys.split(' ').map((k) => <kbd>{k}</kbd>)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      <p class="muted tiny">
+        <T en={`Teaching path ${path.id} ${path.version} (${path.review}).`} bn={`শিক্ষাপথ ${path.id} ${toBnDigits(path.version)} (${path.review})।`} />
+      </p>
+    </aside>
+  </section>
+</Base>
+
+<script>
+  import { journey, unitMap, layoutById } from '../../lib/catalog.ts';
+  import { both } from '../../lib/i18n.ts';
+  import { layoutProgress, load, mastery } from '../../lib/store.ts';
+  const id = location.pathname.split('/').filter(Boolean).at(-1)!;
+  const p = load();
+  const lp = layoutProgress(p, id);
+  const done = new Set(lp.completed);
+  const steps = journey(id);
+  const next = steps.find((s) => !done.has(s.id));
+  const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+  void unitMap(layoutById(id)!.language);
+  document.querySelectorAll<HTMLElement>('.jstep').forEach((li) => {
+    const step = li.dataset.step!;
+    const state = li.querySelector('[data-state]')!;
+    if (done.has(step)) {
+      li.classList.add('done');
+      state.innerHTML = `${lp.best[step] ?? ''}%`;
+    } else if (step === next?.id) {
+      li.classList.add('next');
+      state.innerHTML = both({ en: 'Up next', bn: 'পরের ধাপ' });
+    }
+  });
+  document.querySelectorAll<HTMLElement>('.glyph[data-unit]').forEach((g) => g.classList.add(`m${mastery(lp.units[g.dataset.unit!])}`));
+  const cta = document.getElementById('cta') as HTMLAnchorElement;
+  if (next) {
+    cta.href = `${base}practice/${id}/?step=${next.id}`;
+    if (done.size) cta.innerHTML = `${both({ en: 'Continue', bn: 'চালিয়ে যান' })}: ${both(next.title)}`;
+  }
+</script>
+
+<style>
+  .head {
+    padding-top: 32px;
+    padding-bottom: 12px;
+  }
+  .back {
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .lede {
+    max-width: 40em;
+    margin: 0;
+  }
+  .btn.big {
+    padding: 0.9em 1.5em;
+    font-size: 1.05rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+    gap: 32px;
+    margin-top: 28px;
+    align-items: start;
+  }
+  .journey {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .journey::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: var(--line);
+  }
+  .jstep a {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 10px 12px 10px 0;
+    text-decoration: none;
+    border-radius: var(--radius);
+    position: relative;
+  }
+  .jstep a:hover {
+    background: var(--bg-2);
+  }
+  .node {
+    flex: 0 0 48px;
+    display: grid;
+    place-items: center;
+  }
+  .n {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--line-2);
+    font-size: 0.85rem;
+    font-weight: 650;
+    color: var(--muted);
+    position: relative;
+    z-index: 1;
+  }
+  .jstep.done .n {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: var(--surface);
+  }
+  .jstep.next .n {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 5px var(--accent-soft);
+  }
+  .jstep.next a {
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+  .t {
+    font-weight: 600;
+  }
+  .sub {
+    font-size: 0.9rem;
+  }
+  .glyphs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .glyph {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: 1.15rem;
+  }
+  .glyph.m1 {
+    border-color: var(--f-i-ink);
+  }
+  .glyph.m2 {
+    background: var(--ok-soft);
+  }
+  .glyph.m3 {
+    background: var(--ok-soft);
+    border-color: var(--ok);
+  }
+  .mods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .mods .pill {
+    font-size: 0.75rem;
+  }
+  .state {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ok);
+    white-space: nowrap;
+  }
+  .jstep.next .state {
+    color: var(--accent);
+  }
+  .side {
+    position: sticky;
+    top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .panel {
+    padding: 20px;
+  }
+  .small {
+    font-size: 0.88rem;
+  }
+  .tiny {
+    font-size: 0.76rem;
+  }
+  .kbwrap :global(.kb) {
+    --u: min(31px, calc((100vw - 76px) / 15.2));
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+    color: var(--muted);
+  }
+  .legend .dot {
+    margin-right: 4px;
+  }
+  .rules {
+    padding-left: 1.1em;
+    margin: 0 0 14px;
+  }
+  .rules li {
+    margin-bottom: 6px;
+  }
+  .examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .ex {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--bg);
+  }
+  .ex .word {
+    font-size: 1.3rem;
+  }
+  .keys {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 980px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .side {
+      position: static;
+      order: -1;
+    }
+  }
+</style>

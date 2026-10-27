@@ -1,0 +1,268 @@
+---
+import Base from '../../layouts/Base.astro';
+import T from '../../components/T.astro';
+import library from '../../data/library.json';
+import { layouts } from '../../lib/catalog.ts';
+
+const genres: Record<string, { en: string; bn: string }> = {
+  prose: { en: 'Prose', bn: 'গদ্য' },
+  verse: { en: 'Verse', bn: 'পদ্য' },
+  poetry: { en: 'Poetry', bn: 'কবিতা' },
+  song: { en: 'Song', bn: 'গান' },
+};
+const bnLayouts = layouts.filter((l) => l.language === 'bn');
+---
+<Base title="Library · Kala Learn">
+  <section class="wrap head">
+    <p class="eyebrow"><T en="Library" bn="পাঠাগার" /></p>
+    <h1><T en="Read and type Bangla literature" bn="বাংলা সাহিত্য পড়ুন ও লিখুন" /></h1>
+    <p class="muted lede">
+      <T
+        en="Short reviewed excerpts from public-domain works, each credited to its source. Pick an author, then a work — Kala keeps your place."
+        bn="পাবলিক-ডোমেইন রচনা থেকে পর্যালোচিত ছোট অংশ, প্রতিটির উৎস উল্লেখসহ। একজন লেখক, তারপর একটি রচনা বেছে নিন — Kala আপনার অবস্থান মনে রাখবে।"
+      />
+    </p>
+    <label class="layout-pick">
+      <span class="muted"><T en="Type with" bn="যে লেআউটে লিখবেন" /></span>
+      <select id="lib-layout">
+        {bnLayouts.map((l) => <option value={l.id}>{l.name.en}</option>)}
+      </select>
+    </label>
+  </section>
+
+  <section class="wrap">
+    <div class="authors" id="authors">
+      {library.map((a) => (
+        <button class="author card" type="button" data-author={a.slug}>
+          <span class="name bn">{a.author}</span>
+          <span class="muted small">
+            <T en={`${a.works} works · ${a.excerpts} excerpts`} bn={`${a.works.toLocaleString('bn')}টি রচনা · ${a.excerpts.toLocaleString('bn')}টি অংশ`} />
+          </span>
+          <span class="genres">{a.genres.map((g) => <span class="pill"><T en={genres[g]?.en ?? g} bn={genres[g]?.bn ?? g} /></span>)}</span>
+          <span class="sample bn muted">{a.sample.join(' · ')}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="works card" id="works" hidden>
+      <div class="works-head">
+        <button class="btn ghost small" type="button" id="works-back">← <T en="Authors" bn="লেখক" /></button>
+        <h2 class="bn" id="works-author"></h2>
+        <input type="search" id="works-search" class="search" placeholder="Search titles · শিরোনাম খুঁজুন" aria-label="Search titles" />
+      </div>
+      <div class="filters" id="works-filters"></div>
+      <ul class="list" id="works-list"></ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import library from '../../data/library.json';
+  import { both, escapeHtml } from '../../lib/i18n.ts';
+  import { load, save } from '../../lib/store.ts';
+
+  type Work = { id: string; title: string; collection: string | null; genre: string; sources: string[]; items: { kind: string; text: string }[] };
+  const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+  const $ = (id: string) => document.getElementById(id)!;
+  const select = $('lib-layout') as HTMLSelectElement;
+  const p = load();
+  if (p.layout && [...select.options].some((o) => o.value === p.layout)) select.value = p.layout;
+  select.addEventListener('change', () => {
+    const q = load();
+    q.layout = select.value;
+    save(q);
+    render();
+  });
+
+  const genres: Record<string, { en: string; bn: string }> = {
+    prose: { en: 'Prose', bn: 'গদ্য' }, verse: { en: 'Verse', bn: 'পদ্য' },
+    poetry: { en: 'Poetry', bn: 'কবিতা' }, song: { en: 'Song', bn: 'গান' },
+  };
+  let works: Work[] = [];
+  let author = '';
+  let genre = '';
+
+  function render() {
+    const query = ($('works-search') as HTMLInputElement).value.trim();
+    const shown = works.filter((w) => (!genre || w.genre === genre) && (!query || w.title.includes(query) || (w.collection ?? '').includes(query)));
+    const reading = load().layouts[select.value]?.reading;
+    $('works-list').innerHTML = shown.slice(0, 300).map((w) => {
+      const first = w.items[0]?.text ?? '';
+      const resume = reading?.work === w.id;
+      return `<li><a href="${base}practice/${select.value}/?read=${author}:${encodeURIComponent(w.id)}">
+        <span class="wt bn">${escapeHtml(w.title)}</span>
+        <span class="wm muted">${w.collection ? `<span class="bn">${escapeHtml(w.collection)}</span> · ` : ''}${both(genres[w.genre] ?? { en: w.genre, bn: w.genre })} · ${both({ en: `${w.items.length} excerpt${w.items.length === 1 ? '' : 's'}`, bn: `${w.items.length.toLocaleString('bn')}টি অংশ` })}</span>
+        <span class="wx bn">${escapeHtml(first.slice(0, 120))}${first.length > 120 ? '…' : ''}</span>
+        ${resume ? `<span class="resume">${both({ en: 'Continue reading', bn: 'পড়া চালিয়ে যান' })}</span>` : ''}
+      </a></li>`;
+    }).join('') + (shown.length > 300 ? `<li class="more muted">${both({ en: `${shown.length - 300} more — search to narrow`, bn: `আরও ${shown.length - 300}টি — খুঁজে সংক্ষেপ করুন` })}</li>` : '');
+  }
+
+  async function open(slug: string) {
+    author = slug;
+    genre = '';
+    const a = library.find((x) => x.slug === slug)!;
+    $('works-author').textContent = a.author;
+    $('works-list').innerHTML = `<li class="muted">…</li>`;
+    $('authors').hidden = true;
+    $('works').hidden = false;
+    const response = await fetch(`${base}data/bn/library/${slug}.json`);
+    works = await response.json();
+    $('works-filters').innerHTML = ['', ...a.genres].map((g) =>
+      `<button type="button" class="pill ${g === genre ? 'on' : ''}" data-genre="${g}">${g ? both(genres[g] ?? { en: g, bn: g }) : both({ en: 'All', bn: 'সব' })}</button>`).join('');
+    render();
+    history.replaceState(null, '', `?author=${slug}`);
+    window.scrollTo({ top: 0 });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-author]').forEach((b) => b.addEventListener('click', () => open(b.dataset.author!)));
+  $('works-back').addEventListener('click', () => {
+    $('works').hidden = true;
+    $('authors').hidden = false;
+    history.replaceState(null, '', location.pathname);
+  });
+  $('works-search').addEventListener('input', render);
+  $('works-filters').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-genre]');
+    if (!b) return;
+    genre = b.dataset.genre!;
+    $('works-filters').querySelectorAll('.pill').forEach((x) => x.classList.toggle('on', x === b));
+    render();
+  });
+  document.addEventListener('kala:lang', render);
+  const start = new URLSearchParams(location.search).get('author');
+  if (start && library.some((a) => a.slug === start)) void open(start);
+</script>
+
+<style>
+  .head {
+    padding-top: 48px;
+    padding-bottom: 24px;
+  }
+  .lede {
+    max-width: 44em;
+    font-size: 1.05rem;
+  }
+  .layout-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.92rem;
+  }
+  select,
+  .search {
+    font: inherit;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line-2);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .authors {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 14px;
+  }
+  .author {
+    text-align: left;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .author:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .name {
+    font-size: 1.35rem;
+    font-weight: 600;
+  }
+  .small {
+    font-size: 0.85rem;
+  }
+  .genres {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .sample {
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .works {
+    padding: 20px;
+  }
+  .works-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .works-head h2 {
+    margin: 0;
+    flex: 1;
+  }
+  .search {
+    min-width: 220px;
+  }
+  .filters {
+    display: flex;
+    gap: 6px;
+    margin: 14px 0;
+  }
+  .filters :global(.pill) {
+    border: 1px solid transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+  }
+  .filters :global(.pill.on) {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 10px;
+  }
+  .list :global(a) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: var(--bg);
+    text-decoration: none;
+    height: 100%;
+    border: 1px solid transparent;
+  }
+  .list :global(a:hover) {
+    border-color: var(--accent);
+  }
+  .list :global(.wt) {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .list :global(.wm) {
+    font-size: 0.8rem;
+  }
+  .list :global(.wx) {
+    font-size: 0.95rem;
+    color: var(--ink-2);
+  }
+  .list :global(.resume) {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+</style>

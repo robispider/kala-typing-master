@@ -1,0 +1,6 @@
+Public-domain literature, as confirmed by the user on 20 October 2026.
+Source authors, works and URLs are retained in content-index.json.
+Kazi Nazrul Islam: user-supplied ban-dataset-collection archive; see nazrul-provenance.json.
+Jibanananda Dash: user-requested source repository, 21 October 2026; see jibanananda-provenance.json.
+Labelled typing editions change typography only; source excerpts remain available.
+Authored core fallbacks retain their original notice in LICENSE-CORE.txt.

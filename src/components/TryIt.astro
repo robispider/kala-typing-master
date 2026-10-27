@@ -1,0 +1,172 @@
+---
+// A live taste of practice on the landing page: Kala Goti, a handful of the layout's own examples.
+import { layoutById } from '../lib/catalog.ts';
+import { keyboardHtml } from '../lib/keyboard.ts';
+import T from './T.astro';
+const goti = layoutById('kala-goti')!;
+---
+<div class="try card" id="try" tabindex="0" aria-label="Try typing Bangla">
+  <div class="try-head">
+    <span class="pill"><span class="live" aria-hidden="true"></span><T en="Try it — Kala Goti" bn="চেষ্টা করুন — Kala গতি" /></span>
+    <span class="muted small" id="try-count"></span>
+  </div>
+  <div class="try-target bn" id="try-target" aria-live="polite"></div>
+  <div class="try-typed bn" id="try-typed"></div>
+  <div class="try-hint" id="try-hint"></div>
+  <div class="try-kb" set:html={keyboardHtml(goti, { interactive: true })} />
+  <p class="try-foot muted">
+    <T en="Use your keyboard as it is — Kala types Bangla for you. Or tap the keys." bn="আপনার কিবোর্ড যেমন আছে তেমনই ব্যবহার করুন — Kala আপনার হয়ে বাংলা লিখবে। অথবা কি-তে চাপুন।" />
+  </p>
+</div>
+
+<script>
+  import { FixedComposer } from '../lib/composer.ts';
+  import { charTypes, layoutById } from '../lib/catalog.ts';
+  import { fingerName, fingerOf, qwertyLabel, SPACE, BACKSPACE, shiftFor, vkOfCode } from '../lib/keys.ts';
+  import { press, solve } from '../lib/recipe.ts';
+  import { escapeHtml, t } from '../lib/i18n.ts';
+
+  const layout = layoutById('kala-goti')!;
+  const words = (layout.howToType?.examples ?? []).map((e) => e.text);
+  const box = document.getElementById('try')!;
+  const $ = (id: string) => document.getElementById(id)!;
+  let index = 0;
+  let composer = FixedComposer.create(layout, charTypes);
+  let typed = '';
+  let active = false;
+
+  function render() {
+    const target = words[index];
+    const next = solve(composer, typed, target)?.[0];
+    $('try-count').textContent = `${index + 1} / ${words.length}`;
+    $('try-target').textContent = target;
+    $('try-typed').innerHTML = typed
+      ? `${escapeHtml(typed)}<span class="caret"></span>`
+      : `<span class="ph">${escapeHtml(t({ en: 'Click here, then type', bn: 'এখানে ক্লিক করে টাইপ করুন' }))}</span>`;
+    box.querySelectorAll('.key.target, .key.target-shift').forEach((k) => k.classList.remove('target', 'target-shift'));
+    if (typed === target) {
+      $('try-hint').innerHTML = `${escapeHtml(t({ en: 'Lovely! Press', bn: 'চমৎকার! চাপুন' }))} <kbd>Space</kbd>`;
+      box.querySelector(`.key[data-vk="${SPACE}"]`)?.classList.add('target');
+    } else if (next) {
+      box.querySelector(`.key[data-vk="${next.vk}"]`)?.classList.add('target');
+      if (next.shift) box.querySelector(`.key[data-vk="${shiftFor(next.vk)}"]`)?.classList.add('target-shift');
+      const key = next.vk === BACKSPACE ? '⌫' : (next.shift ? 'Shift + ' : '') + qwertyLabel(next.vk);
+      $('try-hint').innerHTML = `<span class="dot f-${fingerOf(next.vk)}"></span> ${escapeHtml(t(fingerName[fingerOf(next.vk)]))} <kbd>${escapeHtml(key)}</kbd>`;
+    }
+  }
+
+  function key(vk: number, shift: boolean) {
+    const target = words[index];
+    if (vk === SPACE) {
+      if (typed === target) {
+        index = (index + 1) % words.length;
+        typed = '';
+        composer.reset();
+        box.classList.remove('pop');
+        void box.offsetWidth;
+        box.classList.add('pop');
+      }
+    } else if (vk === BACKSPACE || composer.charOf(vk, shift)) {
+      typed = press(composer, typed, { vk, shift });
+    }
+    render();
+  }
+
+  box.addEventListener('focus', () => (active = true));
+  box.addEventListener('blur', () => (active = false));
+  box.addEventListener('keydown', (e) => {
+    if (!active || e.ctrlKey || e.metaKey || e.altKey) return;
+    const vk = vkOfCode[e.code];
+    if (vk === undefined || e.key === 'Shift') return;
+    e.preventDefault();
+    key(vk, e.shiftKey);
+  });
+  let latched = false;
+  box.addEventListener('pointerdown', (e) => {
+    const k = (e.target as HTMLElement).closest<HTMLElement>('.key[data-vk]');
+    if (!k) return;
+    e.preventDefault();
+    box.focus();
+    const vk = Number(k.dataset.vk);
+    if (vk === 160 || vk === 161) {
+      latched = !latched;
+      box.querySelector('.kb')!.classList.toggle('latched', latched);
+      return;
+    }
+    key(vk, latched);
+    latched = false;
+    box.querySelector('.kb')!.classList.remove('latched');
+  });
+  document.addEventListener('kala:lang', render);
+  render();
+</script>
+
+<style>
+  .try {
+    padding: 18px 18px 14px;
+    outline: none;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: text;
+  }
+  .try:focus-within,
+  .try:focus {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-lg), 0 0 0 4px var(--accent-soft);
+  }
+  .try-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .small {
+    font-size: 0.85rem;
+  }
+  .live {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 3px var(--ok-soft);
+  }
+  .try-target {
+    font-size: clamp(2.4rem, 6vw, 3.4rem);
+    text-align: center;
+    margin: 14px 0 0;
+    line-height: 1.3;
+  }
+  .try-typed {
+    text-align: center;
+    font-size: 1.6rem;
+    min-height: 2.4rem;
+    color: var(--ink-2);
+  }
+  .try-typed .ph {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-family: var(--font);
+  }
+  .try-hint {
+    text-align: center;
+    min-height: 1.8rem;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    margin: 4px 0 12px;
+  }
+  .try-kb :global(.kb) {
+    --u: min(34px, calc((100vw - 72px) / 15.2));
+  }
+  .try-foot {
+    font-size: 0.82rem;
+    text-align: center;
+    margin: 12px 0 0;
+  }
+  .try.pop .try-target {
+    animation: pop 0.35s ease;
+  }
+  @keyframes pop {
+    40% {
+      transform: scale(1.06);
+      color: var(--ok);
+    }
+  }
+</style>

@@ -1,0 +1,234 @@
+---
+import Base from '../layouts/Base.astro';
+import T from '../components/T.astro';
+import TryIt from '../components/TryIt.astro';
+import LayoutCards from '../components/LayoutCards.astro';
+import library from '../data/library.json';
+import source from '../data/source.json';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const works = library.reduce((n, a) => n + a.works, 0);
+const excerpts = library.reduce((n, a) => n + a.excerpts, 0);
+---
+<Base title="Kala Learn — Bangla touch typing in your browser">
+  <section class="hero wrap">
+    <div class="copy">
+      <p class="eyebrow"><T en="Bangla & English touch typing" bn="বাংলা ও ইংরেজি টাচ টাইপিং" /></p>
+      <h1>
+        <T en="Learn to type Bangla, calmly and well." bn="ধীরে, সুন্দরভাবে বাংলা টাইপ শিখুন।" />
+      </h1>
+      <p class="lede">
+        <T
+          en="A few keys at a time, with real words and Bangla literature. Kala shows the finger and the key, then steps back as you remember. Nothing to install, no account — just start."
+          bn="একবারে কয়েকটি কি, আসল শব্দ আর বাংলা সাহিত্য দিয়ে। Kala আঙুল আর কি দেখিয়ে দেয়, আপনি মনে রাখলে সরে যায়। কিছু ইনস্টল করতে হবে না, অ্যাকাউন্টও লাগবে না — শুরু করুন।"
+        />
+      </p>
+      <div class="cta">
+        <a class="btn primary" href={`${base}learn/`} id="start-cta"><T en="Start learning" bn="শেখা শুরু করুন" /></a>
+        <a class="btn" href={`${base}library/`}><T en="Browse the library" bn="পাঠাগার দেখুন" /></a>
+      </div>
+      <div class="continue" id="continue" hidden></div>
+      <ul class="promises">
+        <li><T en="No login" bn="লগইন নেই" /></li>
+        <li><T en="No installation" bn="ইনস্টল নেই" /></li>
+        <li><T en="Progress stays on your device" bn="অগ্রগতি আপনার ডিভাইসে" /></li>
+      </ul>
+    </div>
+    <TryIt />
+  </section>
+
+  <section class="wrap section">
+    <p class="eyebrow"><T en="Choose your keyboard" bn="আপনার কিবোর্ড বেছে নিন" /></p>
+    <h2><T en="Four layouts, one gentle path" bn="চারটি লেআউট, একটি সহজ পথ" /></h2>
+    <p class="muted narrow">
+      <T
+        en="Kala Goti and Kala Jhor were arranged by computer search for far less finger travel. UniJoy is the familiar classic. Each follows its own reviewed teaching path."
+        bn="Kala গতি ও Kala ঝড় কম্পিউটার-অনুসন্ধানে সাজানো, আঙুলের চলাচল অনেক কম। ইউনিজয় পরিচিত ক্লাসিক। প্রতিটির নিজস্ব পর্যালোচিত শিক্ষাপথ আছে।"
+      />
+    </p>
+    <LayoutCards />
+  </section>
+
+  <section class="wrap section how">
+    <div class="step card">
+      <span class="num">১</span>
+      <h3><T en="A few keys at a time" bn="একবারে কয়েকটি কি" /></h3>
+      <p class="muted"><T en="Each step introduces three or four letters, shows the finger that types them, then practises them in words you know." bn="প্রতিটি ধাপে তিন-চারটি অক্ষর, কোন আঙুলে লিখবেন তা দেখানো হয়, তারপর চেনা শব্দে অনুশীলন।" /></p>
+    </div>
+    <div class="step card">
+      <span class="num">২</span>
+      <h3><T en="Help that fades" bn="ধীরে কমে আসা সাহায্য" /></h3>
+      <p class="muted"><T en="First you are shown, then prompted when you pause, then you type from memory. Kala notes which keys you knew on your own." bn="প্রথমে দেখানো হয়, থামলে মনে করিয়ে দেওয়া হয়, তারপর আপনি মনে রেখে লেখেন। কোন কি নিজে পেরেছেন Kala তা মনে রাখে।" /></p>
+    </div>
+    <div class="step card">
+      <span class="num">৩</span>
+      <h3><T en="Fair, honest scores" bn="ন্যায্য, সৎ মাপ" /></h3>
+      <p class="muted"><T en="Accuracy counts Bangla letters as Kala does — conjuncts included. Speed is shown only once a sample is long enough to mean something." bn="নির্ভুলতা Kala-র মতো বাংলা অক্ষর ধরে মাপা হয় — যুক্তবর্ণসহ। নমুনা যথেষ্ট দীর্ঘ হলে তবেই গতি দেখানো হয়।" /></p>
+    </div>
+  </section>
+
+  <section class="wrap section lib">
+    <div class="lib-card card">
+      <div>
+        <p class="eyebrow"><T en="The library" bn="পাঠাগার" /></p>
+        <h2><T en="Type through Bangla literature" bn="বাংলা সাহিত্য টাইপ করে পড়ুন" /></h2>
+        <p class="muted">
+          <T
+            en={`${works.toLocaleString('en')} works and ${excerpts.toLocaleString('en')} reviewed excerpts — Rabindranath, Nazrul, Jibanananda, Sukumar Ray and more — with sources credited. Your place in each work is remembered.`}
+            bn={`${works.toLocaleString('bn')}টি রচনা ও ${excerpts.toLocaleString('bn')}টি পর্যালোচিত অংশ — রবীন্দ্রনাথ, নজরুল, জীবনানন্দ, সুকুমার রায় ও আরও অনেকে — উৎসসহ। প্রতিটি রচনায় আপনার অবস্থান মনে রাখা হয়।`}
+          />
+        </p>
+        <a class="btn" href={`${base}library/`}><T en="Open the library" bn="পাঠাগার খুলুন" /></a>
+      </div>
+      <blockquote class="bn">
+        <p>তাকিয়ে দেখি, উত্তরের মাঠ ঘাসে ঢাকা, পুবের মাঠে আউশ ধানের অঙ্কুর…</p>
+        <footer class="muted">রবীন্দ্রনাথ ঠাকুর</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <p class="wrap tiny muted">
+    <T en={`Course content: ${source.packs[0].id} ${source.packs[0].version} and ${source.packs[1].id} ${source.packs[1].version}.`} bn={`পাঠ্যক্রম: ${source.packs[0].id} ${source.packs[0].version} ও ${source.packs[1].id} ${source.packs[1].version}।`} />
+  </p>
+</Base>
+
+<script>
+  import { journey, layoutById } from '../lib/catalog.ts';
+  import { both } from '../lib/i18n.ts';
+  import { load, streak } from '../lib/store.ts';
+  const p = load();
+  const id = p.layout;
+  const layout = id ? layoutById(id) : null;
+  if (layout) {
+    const done = new Set(p.layouts[id!]?.completed ?? []);
+    const next = journey(id!).find((s) => !done.has(s.id));
+    const box = document.getElementById('continue')!;
+    const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+    const days = streak(p);
+    box.innerHTML = `<a class="cont card" href="${base}practice/${id}/${next ? `?step=${next.id}` : ''}">
+      <span class="muted">${both({ en: 'Continue', bn: 'চালিয়ে যান' })} · ${both(layout.name)}</span>
+      <b>${next ? both(next.title) : both({ en: 'Free practice', bn: 'মুক্ত অনুশীলন' })}</b>
+      ${days ? `<span class="streak">${both({ en: `${days}-day streak`, bn: `${days} দিনের ধারা` })}</span>` : ''}
+    </a>`;
+    box.hidden = false;
+  }
+</script>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 48px;
+    align-items: center;
+    padding-top: 56px;
+    padding-bottom: 32px;
+  }
+  .lede {
+    font-size: 1.12rem;
+    color: var(--ink-2);
+    max-width: 34em;
+  }
+  .cta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 24px 0 18px;
+  }
+  .promises {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .promises li::before {
+    content: '✓';
+    color: var(--ok);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .continue :global(.cont) {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 12px 18px;
+    text-decoration: none;
+    margin-top: 4px;
+    border-color: var(--accent);
+  }
+  .continue :global(.streak) {
+    font-size: 0.82rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .section {
+    margin-top: 72px;
+  }
+  .narrow {
+    max-width: 44em;
+    margin-bottom: 24px;
+  }
+  .how {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .step {
+    padding: 22px;
+  }
+  .num {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--font-bn);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .lib-card {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    padding: 32px;
+    align-items: center;
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+  }
+  blockquote {
+    margin: 0;
+    padding: 24px;
+    border-left: 3px solid var(--accent);
+    font-size: 1.35rem;
+    line-height: 1.7;
+    background: var(--bg);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  blockquote footer {
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  .tiny {
+    font-size: 0.78rem;
+    margin-top: 40px;
+  }
+  @media (max-width: 900px) {
+    .hero,
+    .lib-card {
+      grid-template-columns: 1fr;
+    }
+    .hero {
+      padding-top: 28px;
+      gap: 28px;
+    }
+    .how {
+      grid-template-columns: 1fr;
+    }
+    .lib-card {
+      padding: 22px;
+    }
+  }
+</style>

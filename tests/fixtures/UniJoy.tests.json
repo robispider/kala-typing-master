@@ -1,0 +1,7 @@
+[
+  { "keys": [74], "expected": "ক", "note": "consonant" },
+  { "keys": [74, 70], "expected": "কা", "note": "combining a-kar" },
+  { "keys": [74, 71, 75], "expected": "ক্ত", "note": "conjunct" },
+  { "keys": [74, 70, 32, 74], "expected": "কা ক", "note": "separator" },
+  { "keys": [74, 70, 8, 74], "expected": "কক", "note": "editing in fixture target" }
+]

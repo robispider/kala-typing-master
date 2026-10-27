@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import T from '../components/T.astro';
+import source from '../data/source.json';
+import library from '../data/library.json';
+import { layouts, paths } from '../lib/catalog.ts';
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const lit = source.packs[0];
+---
+<Base title="About · Kala Learn">
+  <article class="wrap prose">
+    <p class="eyebrow"><T en="About" bn="পরিচিতি" /></p>
+    <h1><T en="Kala Learn on the web" bn="ওয়েবে Kala Learn" /></h1>
+    <p class="lede">
+      <T
+        en="This site brings the Kala desktop app's typing course to any browser. It uses the same course packs, teaching paths and keyboard layouts, and ports Kala's layout decoder and scorer so practice behaves the same way."
+        bn="এই সাইট Kala ডেস্কটপ অ্যাপের টাইপিং কোর্স যেকোনো ব্রাউজারে নিয়ে আসে। একই কোর্স প্যাক, শিক্ষাপথ ও কিবোর্ড লেআউট ব্যবহার করে, আর Kala-র লেআউট ডিকোডার ও স্কোরার পোর্ট করা, যাতে অনুশীলন একইভাবে চলে।"
+      />
+    </p>
+
+    <h2><T en="Privacy" bn="গোপনীয়তা" /></h2>
+    <p>
+      <T
+        en="There is no login, no server and no analytics. Your progress lives in this browser's storage; nothing is uploaded. Use Progress → Download backup to keep a copy or move it."
+        bn="কোনো লগইন, সার্ভার বা অ্যানালিটিক্স নেই। আপনার অগ্রগতি এই ব্রাউজারের স্টোরেজে থাকে; কিছুই আপলোড হয় না। কপি রাখতে বা স্থানান্তর করতে অগ্রগতি → ব্যাকআপ ডাউনলোড ব্যবহার করুন।"
+      />
+    </p>
+
+    <h2><T en="What is inside" bn="ভেতরে যা আছে" /></h2>
+    <ul>
+      <li><b>{lit.id} {lit.version}</b> — <T en={lit.description.en} bn={lit.description.bn} /></li>
+      <li><b>{source.packs[1].id} {source.packs[1].version}</b> — <T en={source.packs[1].description.en} bn={source.packs[1].description.bn} /></li>
+      {layouts.map((l) => <li><b>{l.name.en}</b> — <T en={`teaching path ${paths[l.id].id} ${paths[l.id].version}, ${paths[l.id].groups.length} key steps, ${paths[l.id].modules.length} micro-lessons`} bn={`শিক্ষাপথ ${paths[l.id].id} ${paths[l.id].version}, ${paths[l.id].groups.length}টি কি-ধাপ, ${paths[l.id].modules.length}টি ছোট পাঠ`} /></li>)}
+      <li><T en={`Library: ${library.length} authors; practice ("train") excerpts only — check and assessment partitions are not published here.`} bn={`পাঠাগার: ${library.length} জন লেখক; শুধু অনুশীলনের অংশ — যাচাই ও মূল্যায়নের অংশ এখানে প্রকাশিত নয়।`} /></li>
+    </ul>
+
+    <h2><T en="How faithful is it?" bn="কতটা বিশ্বস্ত?" /></h2>
+    <ul>
+      <li><T en="The fixed-layout decoder is a line-for-line port of Kala's FixedLayoutManager, checked against all of Kala's recorded Kala Jhor and UniJoy decoder cases and Kala Goti's worked examples." bn="ফিক্সড-লেআউট ডিকোডার Kala-র FixedLayoutManager-এর লাইন-ধরে পোর্ট, Kala-র সব রেকর্ড করা Kala ঝড় ও ইউনিজয় ডিকোডার কেস এবং Kala গতির উদাহরণ দিয়ে যাচাই করা।" /></li>
+      <li><T en="Scoring follows Kala's kala-grapheme-v1 scorer with .NET 8 grapheme units (ক্ষ counts as two units), NFC comparison and the same alignment tie-break — not the browser's newer segmenter." bn="স্কোরিং Kala-র kala-grapheme-v1 অনুসরণ করে, .NET 8 গ্রাফিম একক (ক্ষ দুই একক), NFC তুলনা ও একই অ্যালাইনমেন্ট নিয়মে — ব্রাউজারের নতুন সেগমেন্টার নয়।" /></li>
+      <li><T en="Key recipes are found by replaying keys through the decoder, so context vowels and hasant sequences are always shown correctly." bn="কি-ক্রম ডিকোডারে কি চালিয়ে খুঁজে বের করা হয়, তাই প্রসঙ্গ-স্বর ও হসন্ত-ক্রম সবসময় সঠিক দেখায়।" /></li>
+      <li><T en="This is a prototype. Browser results are practice feedback, not equivalent to Kala's desktop assessments. Progression rules here are simplified (90% accuracy in the recall part completes a step)." bn="এটি একটি প্রোটোটাইপ। ব্রাউজারের ফলাফল অনুশীলনের প্রতিক্রিয়া, Kala ডেস্কটপের মূল্যায়নের সমতুল্য নয়। অগ্রগতির নিয়ম এখানে সরলীকৃত (মনে-রাখা অংশে ৯০% নির্ভুলতায় ধাপ সম্পূর্ণ)।" /></li>
+    </ul>
+
+    <h2><T en="Credits and licences" bn="কৃতজ্ঞতা ও লাইসেন্স" /></h2>
+    <ul>
+      <li><T en="Kala Goti and Kala Jhor layout maps: CC0 1.0." bn="Kala গতি ও Kala ঝড় লেআউট ম্যাপ: CC0 1.0।" /> <a href={`${base}licenses/NOTICE-KALA-LAYOUTS.txt`}>NOTICE</a></li>
+      <li><T en={`Literature: ${lit.provenance?.attribution ?? ''}`} bn={`সাহিত্য: ${lit.provenance?.attribution ?? ''}`} /> <a href={`${base}licenses/kala.bn-literature-LICENSE.txt`}>LICENSE</a> · <a href={`${base}licenses/kala.bn-core-LICENSE.txt`}>core</a></li>
+      <li><T en="English touch course:" bn="ইংরেজি টাচ কোর্স:" /> <a href={`${base}licenses/kala.en-touch-LICENSE.txt`}>LICENSE</a></li>
+      <li><T en="Fonts: Inter and Noto Sans Bengali (SIL Open Font License)." bn="ফন্ট: Inter ও Noto Sans Bengali (SIL Open Font License)।" /></li>
+    </ul>
+    <p class="muted small"><T en={`Content imported ${source.importedAt}.`} bn={`কনটেন্ট আমদানি ${source.importedAt}।`} /></p>
+  </article>
+</Base>
+
+<style>
+  .prose {
+    max-width: 760px;
+    padding-top: 48px;
+  }
+  .lede {
+    font-size: 1.1rem;
+    color: var(--ink-2);
+  }
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 2em;
+  }
+  li {
+    margin-bottom: 0.5em;
+  }
+  .small {
+    font-size: 0.85rem;
+    margin-top: 2em;
+  }
+</style>

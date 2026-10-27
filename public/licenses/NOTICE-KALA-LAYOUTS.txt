@@ -1,0 +1,12 @@
+Kala original keyboard layout maps — CC0 1.0 Universal
+
+Owner approval recorded: 12 October 2026.
+
+Kala dedicates its original Kala Jhor and Kala Goti keyboard layout maps to the public domain under CC0 1.0 Universal, to the extent permitted by law, with the fallback license provided by CC0. The dedication covers the original key/layer mappings and associated original vowel-entry rules in layout/bn/KalaJhor.json and layout/bn/KalaGoti.json.
+
+You may use, copy, adapt and redistribute this original layout material, including commercially, without permission or royalties, under the CC0 terms.
+
+This dedication does not cover Kala application code, dictionaries, training/evaluation data, third-party engines, imported or comparison layouts, brand names/logos, or rights of other people. Their existing terms continue to apply.
+
+CC0 1.0 Universal: https://creativecommons.org/publicdomain/zero/1.0/
+Legal code: https://creativecommons.org/publicdomain/zero/1.0/legalcode.en

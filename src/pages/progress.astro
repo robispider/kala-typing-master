@@ -1,0 +1,328 @@
+---
+import Base from '../layouts/Base.astro';
+import T from '../components/T.astro';
+import { layouts } from '../lib/catalog.ts';
+import { keyboardHtml } from '../lib/keyboard.ts';
+---
+<Base title="Progress · Kala Learn">
+  <section class="wrap head">
+    <p class="eyebrow"><T en="Progress" bn="অগ্রগতি" /></p>
+    <h1><T en="Your practice, on this device" bn="আপনার অনুশীলন, এই ডিভাইসে" /></h1>
+    <p class="muted lede">
+      <T
+        en="Everything here is stored in this browser only. Download a backup to move it to another browser or keep it safe — clearing site data removes it."
+        bn="এখানের সবকিছু শুধু এই ব্রাউজারে রাখা আছে। অন্য ব্রাউজারে নিতে বা নিরাপদে রাখতে ব্যাকআপ ডাউনলোড করুন — সাইট ডেটা মুছলে এগুলো মুছে যাবে।"
+      />
+    </p>
+  </section>
+
+  <section class="wrap">
+    <div class="tiles" id="tiles"></div>
+
+    <div class="grid">
+      <div class="card panel">
+        <div class="panel-head">
+          <h3><T en="Key confidence" bn="কি-আত্মবিশ্বাস" /></h3>
+          <select id="pg-layout">{layouts.map((l) => <option value={l.id}>{l.name.en}</option>)}</select>
+        </div>
+        <p class="muted small"><T en="Greener keys are ones you typed correctly on your own. Red rings mark keys you often reach for wrongly." bn="সবুজ কি আপনি নিজে নির্ভুলভাবে লিখেছেন। লাল বৃত্ত মানে যে কি-তে প্রায়ই ভুল হয়।" /></p>
+        {layouts.map((l) => (
+          <div class="pg-kb" data-kb={l.id} hidden set:html={keyboardHtml(l)} />
+        ))}
+        <div class="legend small muted">
+          <span><i class="sw m0"></i><T en="new" bn="নতুন" /></span>
+          <span><i class="sw m1"></i><T en="practising" bn="অনুশীলনে" /></span>
+          <span><i class="sw m2"></i><T en="confident" bn="আত্মবিশ্বাসী" /></span>
+          <span><i class="sw m3"></i><T en="mastered" bn="দক্ষ" /></span>
+        </div>
+      </div>
+
+      <div class="card panel">
+        <h3><T en="Recent sessions" bn="সাম্প্রতিক অনুশীলন" /></h3>
+        <div class="chart" id="chart" aria-label="Accuracy of recent sessions"></div>
+        <ol class="sessions" id="sessions"></ol>
+      </div>
+    </div>
+
+    <div class="card panel data">
+      <div>
+        <h3><T en="Your data" bn="আপনার ডেটা" /></h3>
+        <p class="muted small" id="save-state"></p>
+      </div>
+      <div class="data-actions">
+        <button class="btn" type="button" id="export"><T en="Download backup" bn="ব্যাকআপ ডাউনলোড" /></button>
+        <label class="btn"><T en="Restore backup" bn="ব্যাকআপ ফেরত আনুন" /><input type="file" accept="application/json,.json" id="import" hidden /></label>
+        <button class="btn ghost danger" type="button" id="reset"><T en="Erase progress" bn="অগ্রগতি মুছুন" /></button>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { journey, layoutById, layouts, unitMap } from '../lib/catalog.ts';
+  import { FixedComposer } from '../lib/composer.ts';
+  import { charTypes } from '../lib/catalog.ts';
+  import { both, escapeHtml, t } from '../lib/i18n.ts';
+  import { solve } from '../lib/recipe.ts';
+  import { exportBackup, importBackup, load, mastery, onSave, resetAll, streak, type Progress } from '../lib/store.ts';
+
+  const $ = (id: string) => document.getElementById(id)!;
+  let p: Progress = load();
+  const select = $('pg-layout') as HTMLSelectElement;
+  if (p.layout) select.value = p.layout;
+
+  const minutes = (ms: number) => Math.round(ms / 60000);
+
+  function tiles() {
+    const total = Object.values(p.days).reduce((a, b) => a + b, 0);
+    const recent = p.sessions.slice(-20);
+    const acc = recent.length ? Math.round(recent.reduce((a, s) => a + s.accuracy, 0) / recent.length) : null;
+    const qualified = p.sessions.filter((s) => s.qualified && s.gpm);
+    const best = qualified.length ? Math.round(Math.max(...qualified.map((s) => s.gpm!))) : null;
+    const steps = Object.values(p.layouts).reduce((a, l) => a + l.completed.length, 0);
+    const tile = (value: string, label: { en: string; bn: string }) => `<div class="tile card"><b>${value}</b><span>${both(label)}</span></div>`;
+    $('tiles').innerHTML = [
+      tile(String(streak(p)), { en: 'day streak', bn: 'দিনের ধারা' }),
+      tile(String(minutes(total)), { en: 'minutes practised', bn: 'মিনিট অনুশীলন' }),
+      tile(acc == null ? '—' : `${acc}%`, { en: 'recent accuracy', bn: 'সাম্প্রতিক নির্ভুলতা' }),
+      tile(best == null ? '—' : String(best), { en: 'best letters/min (qualified)', bn: 'সেরা অক্ষর/মিনিট (যোগ্য)' }),
+      tile(String(steps), { en: 'steps completed', bn: 'ধাপ সম্পন্ন' }),
+    ].join('');
+  }
+
+  function keyboard() {
+    const id = select.value;
+    document.querySelectorAll<HTMLElement>('[data-kb]').forEach((k) => (k.hidden = k.dataset.kb !== id));
+    const box = document.querySelector<HTMLElement>(`[data-kb="${id}"]`)!;
+    const layout = layoutById(id)!;
+    const lp = p.layouts[id];
+    const composer = FixedComposer.create(layout, charTypes);
+    // A key's level is the best mastery among the units it types (first press of each unit's recipe).
+    const level: Record<string, number> = {};
+    for (const unit of unitMap(layout.language).values()) {
+      const m = mastery(lp?.units[unit.id]);
+      if (!m) continue;
+      const steps = solve(composer, '', unit.text);
+      for (const s of steps ?? []) level[s.vk] = Math.max(level[s.vk] ?? 0, m);
+    }
+    box.querySelectorAll<HTMLElement>('.key[data-vk]').forEach((k) => {
+      const vk = k.dataset.vk!;
+      k.classList.remove('m0', 'm1', 'm2', 'm3', 'trouble');
+      k.classList.add(`m${level[vk] ?? 0}`);
+      const errors = (lp?.keyErrors[vk] ?? 0) + (lp?.keyErrors[`${vk}s`] ?? 0);
+      if (errors >= 3) k.classList.add('trouble');
+    });
+  }
+
+  function sessions() {
+    const recent = p.sessions.slice(-30);
+    $('chart').innerHTML = recent.length
+      ? recent.map((s) => `<span style="--h:${s.accuracy}%" title="${s.accuracy}%"></span>`).join('')
+      : `<p class="muted small">${both({ en: 'Your sessions will appear here.', bn: 'আপনার অনুশীলনগুলো এখানে দেখা যাবে।' })}</p>`;
+    $('sessions').innerHTML = recent.slice(-8).reverse().map((s) => {
+      const layout = layoutById(s.layout);
+      const step = journey(s.layout).find((x) => x.id === s.step);
+      const when = new Date(s.at).toLocaleString(document.documentElement.lang === 'bn' ? 'bn-BD' : undefined, { dateStyle: 'medium', timeStyle: 'short' });
+      return `<li><span><b>${escapeHtml(t(step?.title ?? { en: 'Reading', bn: 'পড়া' }))}</b> <span class="muted">· ${escapeHtml(t(layout?.name))}</span><br><small class="muted">${escapeHtml(when)}</small></span>
+        <span class="num">${s.accuracy}%${s.qualified && s.gpm ? ` · ${Math.round(s.gpm)}/min` : ''}</span></li>`;
+    }).join('');
+  }
+
+  function all() {
+    tiles();
+    keyboard();
+    sessions();
+  }
+
+  select.addEventListener('change', keyboard);
+  $('export').addEventListener('click', () => {
+    const blob = new Blob([exportBackup()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `kala-learn-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  $('import').addEventListener('change', async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    try {
+      p = importBackup(await file.text());
+      $('save-state').textContent = t({ en: 'Backup restored.', bn: 'ব্যাকআপ ফেরত আনা হয়েছে।' });
+      all();
+    } catch (error) {
+      $('save-state').textContent = String(error instanceof Error ? error.message : error);
+    }
+  });
+  $('reset').addEventListener('click', () => {
+    if (!confirm(t({ en: 'Erase all progress in this browser? This cannot be undone.', bn: 'এই ব্রাউজারের সব অগ্রগতি মুছবেন? এটি ফেরানো যাবে না।' }))) return;
+    p = resetAll();
+    all();
+  });
+  onSave((error) => {
+    if (error) $('save-state').textContent = error;
+  });
+  $('save-state').textContent = t({
+    en: `Started ${new Date(p.createdAt).toLocaleDateString()} · ${p.sessions.length} sessions saved`,
+    bn: `শুরু ${new Date(p.createdAt).toLocaleDateString('bn-BD')} · ${p.sessions.length.toLocaleString('bn')}টি অনুশীলন সংরক্ষিত`,
+  });
+  document.addEventListener('kala:lang', all);
+  void layouts;
+  all();
+</script>
+
+<style>
+  .head {
+    padding-top: 48px;
+    padding-bottom: 24px;
+  }
+  .lede {
+    max-width: 46em;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .tiles :global(.tile) {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+  }
+  .tiles :global(.tile b) {
+    font-size: 1.9rem;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tiles :global(.tile span) {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+  .panel {
+    padding: 20px;
+  }
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  select {
+    font: inherit;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--line-2);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .small {
+    font-size: 0.86rem;
+  }
+  .pg-kb :global(.kb) {
+    --u: min(38px, calc((100vw - 76px) / 15.2));
+  }
+  .pg-kb :global(.key.m1) {
+    --c: var(--f-i);
+  }
+  .pg-kb :global(.key.m2) {
+    --c: color-mix(in srgb, var(--ok) 35%, var(--key));
+  }
+  .pg-kb :global(.key.m3) {
+    --c: color-mix(in srgb, var(--ok) 65%, var(--key));
+  }
+  .pg-kb :global(.key.trouble) {
+    box-shadow: 0 0 0 2px var(--bad);
+  }
+  .legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .sw {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    margin-right: 5px;
+    vertical-align: -1px;
+    border: 1px solid var(--key-edge);
+    background: var(--key);
+  }
+  .sw.m1 {
+    background: var(--f-i);
+  }
+  .sw.m2 {
+    background: color-mix(in srgb, var(--ok) 35%, var(--key));
+  }
+  .sw.m3 {
+    background: color-mix(in srgb, var(--ok) 65%, var(--key));
+  }
+  .chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 90px;
+    margin: 10px 0 14px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--line);
+  }
+  .chart :global(span) {
+    flex: 1;
+    max-width: 18px;
+    height: var(--h);
+    background: color-mix(in srgb, var(--accent) 75%, var(--surface));
+    border-radius: 4px 4px 0 0;
+  }
+  .sessions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sessions :global(li) {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.9rem;
+  }
+  .sessions :global(.num) {
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .data {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .data h3 {
+    margin-bottom: 2px;
+  }
+  .data p {
+    margin: 0;
+  }
+  .data-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .danger {
+    color: var(--bad);
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

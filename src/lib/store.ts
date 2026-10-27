@@ -37,7 +37,7 @@ export interface Progress {
   createdAt: number;
   layout: string | null;
   lang: 'en' | 'bn';
-  settings: { hints: boolean; keyboard: boolean; theme: 'auto' | 'light' | 'dark' };
+  settings: { hints: boolean; keyboard: boolean; hands: boolean; pastel: boolean; theme: 'auto' | 'light' | 'dark' };
   layouts: Record<string, LayoutProgress>;
   sessions: SessionRecord[];
   days: Record<string, number>; // yyyy-mm-dd -> active ms
@@ -49,7 +49,7 @@ const fresh = (): Progress => ({
   createdAt: Date.now(),
   layout: null,
   lang: 'en',
-  settings: { hints: true, keyboard: true, theme: 'auto' },
+  settings: { hints: true, keyboard: true, hands: true, pastel: true, theme: 'auto' },
   layouts: {},
   sessions: [],
   days: {},

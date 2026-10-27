@@ -228,7 +228,7 @@ import { keyboardHtml } from '../lib/keyboard.ts';
     --u: min(38px, calc((100vw - 76px) / 15.2));
   }
   .pg-kb :global(.key.m1) {
-    --c: var(--f-i);
+    --c: color-mix(in srgb, var(--f-li) 60%, var(--key));
   }
   .pg-kb :global(.key.m2) {
     --c: color-mix(in srgb, var(--ok) 35%, var(--key));
@@ -256,7 +256,7 @@ import { keyboardHtml } from '../lib/keyboard.ts';
     background: var(--key);
   }
   .sw.m1 {
-    background: var(--f-i);
+    background: color-mix(in srgb, var(--f-li) 60%, var(--key));
   }
   .sw.m2 {
     background: color-mix(in srgb, var(--ok) 35%, var(--key));

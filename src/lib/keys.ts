@@ -82,3 +82,11 @@ export const qwertyLabel = (vk: number): string => {
 
 /** Home keys carry tactile bumps. */
 export const homeBumps = new Set([70, 74]);
+
+/** Kala/XKB position ids for the ANSI keys, as Kala's hand library binds them. */
+export const positionOfVk: Record<number, string> = { 192: 'TLDE', 8: 'BKSP', 9: 'TAB', 220: 'BKSL', 20: 'CAPS', 13: 'RTRN', 160: 'LFSH', 161: 'RTSH', 32: 'SPCE' };
+const positions = (prefix: string, vks: number[]) => vks.forEach((vk, i) => (positionOfVk[vk] = `${prefix}${String(i + 1).padStart(2, '0')}`));
+positions('AE', [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 189, 187]);
+positions('AD', [81, 87, 69, 82, 84, 89, 85, 73, 79, 80, 219, 221]);
+positions('AC', [65, 83, 68, 70, 71, 72, 74, 75, 76, 186, 222]);
+positions('AB', [90, 88, 67, 86, 66, 78, 77, 188, 190, 191]);

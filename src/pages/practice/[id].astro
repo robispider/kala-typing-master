@@ -28,6 +28,12 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         <label class="switch" title="Show the keyboard">
           <input type="checkbox" id="pr-showkb" checked /><span><T en="Keyboard" bn="কিবোর্ড" /></span>
         </label>
+        <label class="switch" title="Show hands moving to the next key">
+          <input type="checkbox" id="pr-hands" checked /><span><T en="Hands" bn="হাত" /></span>
+        </label>
+        <label class="switch" title="Colour each key by the finger that presses it">
+          <input type="checkbox" id="pr-pastel" checked /><span><T en="Colours" bn="রং" /></span>
+        </label>
       </div>
     </div>
 
@@ -325,7 +331,18 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     font-size: 0.95rem;
   }
   .pr-kb {
+    position: relative;
     transition: opacity 0.2s ease;
+  }
+  /* Kala's hand library is drawn against 84-unit rows, a little flatter than square keys. */
+  .pr-kb:global(.hands) :global(.key) {
+    height: calc(var(--u) * 0.836);
+  }
+  .pr-kb :global(.hands-canvas) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
   }
   :global(.practice.no-kb) .pr-kb {
     display: none;
@@ -472,6 +489,16 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   @media (max-width: 640px) {
     .pr-toggles span {
       display: none;
+    }
+    .pr-top {
+      flex-wrap: wrap;
+    }
+    .pr-titles {
+      flex: 1;
+    }
+    .pr-bar {
+      order: 3;
+      flex-basis: 100%;
     }
     .pr-card {
       padding: 20px 14px 16px;

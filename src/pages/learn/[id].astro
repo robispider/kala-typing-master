@@ -62,10 +62,10 @@ const moduleAt = (unitIds: string[]) => path.modules.filter((m) => m.targetUnits
         <p class="muted small"><T en="Colours show which finger presses each key. Upper legends need Shift." bn="রং দেখায় কোন আঙুলে কোন কি চাপবেন। উপরের অক্ষরের জন্য শিফট লাগে।" /></p>
         <div class="kbwrap" set:html={keyboardHtml(layout).replace('class="kb"', 'class="kb fingers"')} />
         <div class="legend small">
-          <span><span class="dot f-lp"></span><T en="little" bn="কনিষ্ঠা" /></span>
-          <span><span class="dot f-lr"></span><T en="ring" bn="অনামিকা" /></span>
-          <span><span class="dot f-lm"></span><T en="middle" bn="মধ্যমা" /></span>
-          <span><span class="dot f-li"></span><T en="index" bn="তর্জনী" /></span>
+          <span><span class="dot f-lp"></span><span class="dot f-rp"></span><T en="little" bn="কনিষ্ঠা" /></span>
+          <span><span class="dot f-lr"></span><span class="dot f-rr"></span><T en="ring" bn="অনামিকা" /></span>
+          <span><span class="dot f-lm"></span><span class="dot f-rm"></span><T en="middle" bn="মধ্যমা" /></span>
+          <span><span class="dot f-li"></span><span class="dot f-ri"></span><T en="index" bn="তর্জনী" /></span>
           <span><span class="dot f-th"></span><T en="thumb" bn="বৃদ্ধাঙ্গুল" /></span>
         </div>
       </div>
@@ -247,7 +247,7 @@ const moduleAt = (unitIds: string[]) => path.modules.filter((m) => m.targetUnits
     font-size: 1.15rem;
   }
   .glyph.m1 {
-    border-color: var(--f-i-ink);
+    border-color: #c6a331;
   }
   .glyph.m2 {
     background: var(--ok-soft);
@@ -301,6 +301,9 @@ const moduleAt = (unitIds: string[]) => path.modules.filter((m) => m.targetUnits
   }
   .legend .dot {
     margin-right: 4px;
+  }
+  .legend .dot + .dot {
+    margin-left: -2px;
   }
   .rules {
     padding-left: 1.1em;

@@ -8,6 +8,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, rmSync, writeFileSync, copyFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { importHands } from './import-hands.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const kala = resolve(process.argv[2] ?? process.env.KALA_SRC ?? join(root, '..', 'kala'));
@@ -287,6 +288,10 @@ write(join(srcData, 'source.json'), {
   comparison: bnLanguage.comparison,
   sizes,
 });
+
+// ---- Rendered hand guide (its own notice is copied with it).
+const hands = importHands(kala, root);
+console.log(`Hands: ${hands.poses} poses, ${(hands.bytes / 1024).toFixed(0)} KiB`);
 
 console.log(`Imported from ${kala}`);
 console.log(`  ${layouts.length} layouts, ${Object.keys(paths).length} teaching paths, ${library.length} authors`);

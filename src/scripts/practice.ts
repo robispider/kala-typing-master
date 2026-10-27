@@ -3,7 +3,8 @@ import library from '../data/library.json';
 import { FixedComposer } from '../lib/composer.ts';
 import { charTypes, display, journey, layoutById, toBnDigits, unitMap, type Text } from '../lib/catalog.ts';
 import { both, escapeHtml, lang, t } from '../lib/i18n.ts';
-import { BACKSPACE, ENTER, fingerName, fingerOf, qwertyLabel, SHIFT_LEFT, SHIFT_RIGHT, shiftFor, SPACE, vkOfCode } from '../lib/keys.ts';
+import { HandGuide } from '../lib/hands.ts';
+import { BACKSPACE, ENTER, fingerName, fingerOf, positionOfVk, qwertyLabel, SHIFT_LEFT, SHIFT_RIGHT, shiftFor, SPACE, vkOfCode } from '../lib/keys.ts';
 import { planStep, type Item, type Phase, type PunctuationItem, type WordsData } from '../lib/planner.ts';
 import { press, solve, type Step } from '../lib/recipe.ts';
 import { correctGpm, fiveCharWpm, graphemes, score, speedQualifies, words as splitWords } from '../lib/scoring.ts';
@@ -41,7 +42,10 @@ const el = {
   ime: $('pr-ime'),
   hints: $<HTMLInputElement>('pr-hints'),
   showKb: $<HTMLInputElement>('pr-showkb'),
+  hands: $<HTMLInputElement>('pr-hands'),
+  pastel: $<HTMLInputElement>('pr-pastel'),
 };
+const hands = new HandGuide(el.kb, `${base}hands/`);
 
 // ---------------------------------------------------------------- session state
 
@@ -236,7 +240,10 @@ function renderHint() {
     const shiftNote = next.shift ? t({ en: ` + ${t(fingerName[fingerOf(shiftFor(next.vk))])} on Shift`, bn: ` + শিফটে ${t(fingerName[fingerOf(shiftFor(next.vk))])}` }) : '';
     el.finger.innerHTML = `<span class="dot f-${finger}"></span><b>${escapeHtml(t(fingerName[finger]))}</b>` +
       `<kbd>${escapeHtml(keyName(next))}</kbd>${escapeHtml(shiftNote)}`;
+    // The revision changes with every step, so a doubled key presses again in place.
+    hands.setCue(positionOfVk[next.vk] ?? null, next.shift, `${wi}:${fullRecipe ? fullRecipe.length - recipe!.length : 0}`);
   } else {
+    hands.setCue(null, false, '');
     el.finger.innerHTML = mode === 'typing' && assist() === 'independent' && !word.hinted
       ? `<span class="muted">${t({ en: 'From memory — press Tab for a hint', bn: 'মনে রেখে — সাহায্যের জন্য Tab' })}</span>`
       : mode === 'typing' && recipe?.length === 0
@@ -601,6 +608,19 @@ el.showKb.addEventListener('change', () => {
   save(p);
   root.classList.toggle('no-kb', !el.showKb.checked);
 });
+el.hands.addEventListener('change', () => {
+  const p = load();
+  p.settings.hands = el.hands.checked;
+  save(p);
+  hands.setEnabled(el.hands.checked);
+  renderHint();
+});
+el.pastel.addEventListener('change', () => {
+  const p = load();
+  p.settings.pastel = el.pastel.checked;
+  save(p);
+  el.kb.querySelector('.kb')?.classList.toggle('fingers', el.pastel.checked);
+});
 $('pr-ime-close').addEventListener('click', () => (el.ime.hidden = true));
 window.setInterval(() => mode === 'typing' && renderStats(), 1000);
 
@@ -610,7 +630,11 @@ window.setInterval(() => mode === 'typing' && renderStats(), 1000);
   const p = load();
   el.hints.checked = p.settings.hints;
   el.showKb.checked = p.settings.keyboard;
+  el.hands.checked = p.settings.hands;
+  el.pastel.checked = p.settings.pastel;
   root.classList.toggle('no-kb', !p.settings.keyboard);
+  el.kb.querySelector('.kb')?.classList.toggle('fingers', p.settings.pastel);
+  hands.setEnabled(p.settings.hands);
   try {
     phases = await typablePlan();
   } catch (error) {

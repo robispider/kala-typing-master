@@ -21,17 +21,18 @@
   --shadow: 0 1px 2px rgb(27 26 23 / 0.04), 0 8px 24px -12px rgb(27 26 23 / 0.12);
   --shadow-lg: 0 2px 6px rgb(27 26 23 / 0.05), 0 24px 48px -20px rgb(27 26 23 / 0.22);
 
-  /* Finger colours: one pastel per finger pair, as Kala's keyboard guide. */
-  --f-p: #d9ccf4;
-  --f-r: #c4dcf7;
-  --f-m: #c7ecd6;
-  --f-i: #f8e1a6;
-  --f-t: #f6cfd6;
-  --f-p-ink: #6a4fb3;
-  --f-r-ink: #2f6aa8;
-  --f-m-ink: #2c805a;
-  --f-i-ink: #9a6a07;
-  --f-t-ink: #b44a62;
+  /* Finger colours: Kala's pastel keyboard, one wash per finger. They stay pastel with dark ink in
+     both themes, as in Kala. */
+  --f-lp: #d6b8ed;
+  --f-lr: #f1bcd2;
+  --f-lm: #f5c6a5;
+  --f-li: #ecd88e;
+  --f-ri: #b6d99b;
+  --f-rm: #94d6ce;
+  --f-rr: #9ec9ed;
+  --f-rp: #b6b9ed;
+  --f-th: #ddcdb9;
+  --f-ink: #1b1a17;
 
   --key: #ffffff;
   --key-edge: #d9d3c6;
@@ -66,16 +67,6 @@
     --focus: #7aa7ff;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.6);
     --shadow-lg: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 48px -20px rgb(0 0 0 / 0.7);
-    --f-p: #3d3358;
-    --f-r: #273b54;
-    --f-m: #24402f;
-    --f-i: #4a3b17;
-    --f-t: #4a2a32;
-    --f-p-ink: #c9b6f6;
-    --f-r-ink: #9cc6f4;
-    --f-m-ink: #93dcb4;
-    --f-i-ink: #f1cd73;
-    --f-t-ink: #f1a9b8;
     --key: #2a2925;
     --key-edge: #3a3833;
     --key-ink: #ece7dd;
@@ -103,16 +94,6 @@
   --focus: #7aa7ff;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.6);
   --shadow-lg: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 48px -20px rgb(0 0 0 / 0.7);
-  --f-p: #3d3358;
-  --f-r: #273b54;
-  --f-m: #24402f;
-  --f-i: #4a3b17;
-  --f-t: #4a2a32;
-  --f-p-ink: #c9b6f6;
-  --f-r-ink: #9cc6f4;
-  --f-m-ink: #93dcb4;
-  --f-i-ink: #f1cd73;
-  --f-t-ink: #f1a9b8;
   --key: #2a2925;
   --key-edge: #3a3833;
   --key-ink: #ece7dd;
@@ -350,7 +331,7 @@ kbd {
   background: var(--c);
   border: 1px solid var(--key-edge);
   border-bottom-width: calc(var(--u) * 0.06 + 1px);
-  color: var(--key-ink);
+  color: var(--kc, var(--key-ink));
   font: inherit;
   padding: 0;
   display: block;
@@ -364,35 +345,44 @@ button.key {
   border-color: transparent;
 }
 .kb.fingers .key.f-lp,
-.kb.fingers .key.f-rp,
-.key.target.f-lp,
-.key.target.f-rp {
-  --c: var(--f-p);
+.key.target.f-lp {
+  --c: var(--f-lp);
 }
 .kb.fingers .key.f-lr,
-.kb.fingers .key.f-rr,
-.key.target.f-lr,
-.key.target.f-rr {
-  --c: var(--f-r);
+.key.target.f-lr {
+  --c: var(--f-lr);
 }
 .kb.fingers .key.f-lm,
-.kb.fingers .key.f-rm,
-.key.target.f-lm,
-.key.target.f-rm {
-  --c: var(--f-m);
+.key.target.f-lm {
+  --c: var(--f-lm);
 }
 .kb.fingers .key.f-li,
+.key.target.f-li {
+  --c: var(--f-li);
+}
 .kb.fingers .key.f-ri,
-.key.target.f-li,
 .key.target.f-ri {
-  --c: var(--f-i);
+  --c: var(--f-ri);
+}
+.kb.fingers .key.f-rm,
+.key.target.f-rm {
+  --c: var(--f-rm);
+}
+.kb.fingers .key.f-rr,
+.key.target.f-rr {
+  --c: var(--f-rr);
+}
+.kb.fingers .key.f-rp,
+.key.target.f-rp {
+  --c: var(--f-rp);
 }
 .kb.fingers .key.f-th,
 .key.target.f-th {
-  --c: var(--f-t);
+  --c: var(--f-th);
 }
-.kb.fingers .key:not(.k-char):not(.k-space) {
-  --c: var(--key);
+.kb.fingers .key:not(.blank),
+.key.target {
+  --kc: var(--f-ink);
 }
 .key .qw {
   position: absolute;
@@ -492,38 +482,44 @@ button.key {
   vertical-align: middle;
 }
 .dot.f-lp,
-.dot.f-rp,
-.chip.f-lp kbd,
-.chip.f-rp kbd {
-  background: var(--f-p);
-  color: var(--f-p-ink);
+.chip.f-lp kbd {
+  background: var(--f-lp);
 }
 .dot.f-lr,
-.dot.f-rr,
-.chip.f-lr kbd,
-.chip.f-rr kbd {
-  background: var(--f-r);
-  color: var(--f-r-ink);
+.chip.f-lr kbd {
+  background: var(--f-lr);
 }
 .dot.f-lm,
-.dot.f-rm,
-.chip.f-lm kbd,
-.chip.f-rm kbd {
-  background: var(--f-m);
-  color: var(--f-m-ink);
+.chip.f-lm kbd {
+  background: var(--f-lm);
 }
 .dot.f-li,
+.chip.f-li kbd {
+  background: var(--f-li);
+}
 .dot.f-ri,
-.chip.f-li kbd,
 .chip.f-ri kbd {
-  background: var(--f-i);
-  color: var(--f-i-ink);
+  background: var(--f-ri);
+}
+.dot.f-rm,
+.chip.f-rm kbd {
+  background: var(--f-rm);
+}
+.dot.f-rr,
+.chip.f-rr kbd {
+  background: var(--f-rr);
+}
+.dot.f-rp,
+.chip.f-rp kbd {
+  background: var(--f-rp);
 }
 .dot.f-th,
 .chip.f-th kbd,
 .chip.space kbd {
-  background: var(--f-t);
-  color: var(--f-t-ink);
+  background: var(--f-th);
+}
+.chip kbd {
+  color: var(--f-ink);
 }
 
 @media (prefers-reduced-motion: reduce) {

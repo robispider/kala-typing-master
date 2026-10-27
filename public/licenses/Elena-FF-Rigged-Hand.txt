@@ -1,0 +1,11 @@
+Rigged hand by Elena FF
+https://sketchfab.com/3d-models/rigged-hand-eae97cc2a742413cb5338ab942b12c1e
+Creator: https://sketchfab.com/elenaferfor
+Creative Commons Attribution-ShareAlike 4.0 International
+https://creativecommons.org/licenses/by-sa/4.0/
+Changes: neutral material, lower-palm posture, mirrored left-hand presentation,
+authored finger-joint poses, fixed orthographic framing, registered finger masks,
+shared palette, exact-alpha image
+differences and Brotli compression. Modified and rendered hand artwork is CC BY-SA 4.0.
+No endorsement by the creator is implied. Development source and reproduction:
+tools/learning-assets/hands/ in the Kala source repository.

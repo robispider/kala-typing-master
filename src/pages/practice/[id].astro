@@ -332,14 +332,17 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   }
   .pr-kb {
     position: relative;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease, padding-bottom 0.2s ease;
   }
-  /* Kala's hand library is drawn against 84-unit rows, a little flatter than square keys. */
-  .pr-kb:global(.hands) :global(.key) {
+  /* Kala's hand library is drawn against 84-unit rows, a little flatter than square keys. The practice
+     keyboard keeps that shape with hands on or off, so toggling them never resizes the keys. */
+  .pr-kb :global(.key) {
     height: calc(var(--u) * 0.836);
   }
+  /* Hands sit above every key, including the raised next-key highlight. */
   .pr-kb :global(.hands-canvas) {
     position: absolute;
+    z-index: 2;
     left: 0;
     top: 0;
     pointer-events: none;

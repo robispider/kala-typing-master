@@ -1,0 +1,402 @@
+---
+import Base from '../../layouts/Base.astro';
+import T from '../../components/T.astro';
+import { layouts } from '../../lib/catalog.ts';
+import { S } from '../../lib/check/strings.ts';
+
+// Only Kala's own fixed Bangla layouts have validated check forms in the prompt bank.
+const checkLayouts = layouts.filter((l) => l.language === 'bn');
+---
+<Base title="Typing skill check · Kala Learn" description="A four-minute Bangla typing check: speed, accuracy and keys to practise. Sharing the recording for research is optional." focus>
+  <div class="wrap check" data-check>
+    <section id="ck-setup" class="ck-setup">
+      <p class="eyebrow"><T {...S.title} /></p>
+      <h1><T en="How do you type today?" bn="আজ আপনি কেমন টাইপ করছেন?" /></h1>
+      <p class="muted lede"><T {...S.intro} /></p>
+
+      <div class="card ck-panel">
+        <fieldset>
+          <legend><T {...S.layout} /></legend>
+          <div class="ck-choices">
+            {checkLayouts.map((l, i) => (
+              <label class="ck-choice">
+                <input type="radio" name="ck-layout" value={l.id} checked={i === 0} />
+                <span><b><T en={l.name.en} bn={l.name.bn} /></b></span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend><T {...S.keyboard} /></legend>
+          <div class="ck-choices">
+            <label class="ck-choice"><input type="radio" name="ck-keyboard" value="laptop-builtin" /><span><T {...S.laptop} /></span></label>
+            <label class="ck-choice"><input type="radio" name="ck-keyboard" value="external" /><span><T {...S.external} /></span></label>
+            <label class="ck-choice"><input type="radio" name="ck-keyboard" value="unknown" checked /><span><T en="Not sure" bn="নিশ্চিত নই" /></span></label>
+          </div>
+        </fieldset>
+        <p class="muted small"><T {...S.notice} /></p>
+        <details class="ck-details">
+          <summary><T {...S.privacy} /></summary>
+          <p class="small"><T {...S.collectionPrivacy} /></p>
+          <p class="small">
+            <a data-l="en" href="https://robispider.github.io/kala-releases/en/privacy/" rel="noopener">{S.fullNotice.en}</a>
+            <a data-l="bn" lang="bn" href="https://robispider.github.io/kala-releases/bn/privacy/" rel="noopener">{S.fullNotice.bn}</a>
+          </p>
+        </details>
+        <div class="ck-actions">
+          <button class="btn primary" id="ck-next" type="button"><T {...S.next} /></button>
+          <span class="muted small" id="ck-setup-status" aria-live="polite"><T {...S.setup} /></span>
+        </div>
+        <p class="note" id="ck-touch" hidden><T en="This check needs a physical keyboard. On a phone or tablet, connect one first." bn="এই যাচাইয়ের জন্য কিবোর্ড লাগবে। ফোন বা ট্যাবলেটে আগে একটি কিবোর্ড যুক্ত করুন।" /></p>
+      </div>
+    </section>
+
+    <section id="ck-work" class="ck-work" hidden>
+      <div class="ck-top">
+        <div class="ck-titles">
+          <span class="muted small" id="ck-layout-name"></span>
+          <b id="ck-status" aria-live="polite">&nbsp;</b>
+        </div>
+        <div class="ck-bar" id="ck-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+        <div class="ck-buttons">
+          <button class="btn primary small" id="ck-start" type="button" disabled><T {...S.start} /></button>
+          <button class="btn small" id="ck-pause" type="button" hidden><T {...S.pause} /></button>
+          <button class="btn ghost small" id="ck-stop" type="button" hidden><T {...S.stop} /></button>
+        </div>
+      </div>
+
+      <div class="card ck-step" id="ck-step" role="status" hidden>
+        <b><T {...S.stepPausedTitle} /></b>
+        <p id="ck-step-text"></p>
+      </div>
+
+      <div class="card ck-card" id="ck-card">
+        <p class="ck-credit muted" id="ck-credit" hidden></p>
+        <div class="ck-prompt bn" id="ck-prompt" aria-label="Text to type"></div>
+        <div class="ck-probe" id="ck-probe" hidden>
+          <p class="ck-probe-task" id="ck-probe-task"></p>
+          <div class="ck-block" id="ck-block" aria-hidden="true"></div>
+          <p class="ck-probe-feedback muted" id="ck-probe-feedback" aria-live="polite"></p>
+        </div>
+      </div>
+      <p class="ck-hint muted" id="ck-hint" aria-live="polite"></p>
+      <p class="note" id="ck-ime" role="alert" hidden></p>
+    </section>
+
+    <section id="ck-result" class="ck-result" hidden aria-live="polite"></section>
+
+    <section id="ck-share" class="card ck-share" hidden>
+      <h2><T {...S.shareTitle} /></h2>
+      <p id="ck-share-text"></p>
+      <p class="muted small" id="ck-share-status" aria-live="polite"></p>
+      <div class="ck-actions">
+        <button class="btn" id="ck-preview" type="button"><T {...S.preview} /></button>
+        <button class="btn ghost" id="ck-dont" type="button"><T {...S.dontSend} /></button>
+        <button class="btn primary" id="ck-send" type="button" disabled><T {...S.send} /></button>
+      </div>
+    </section>
+
+    <section id="ck-thanks" class="card ck-share" hidden>
+      <p id="ck-thanks-text" aria-live="polite"></p>
+      <div class="ck-actions">
+        <a class="btn primary" id="ck-again" href="./"><T {...S.again} /></a>
+      </div>
+    </section>
+
+    <details class="ck-research" id="ck-research">
+      <summary><T {...S.research} /></summary>
+      <p class="small muted"><T {...S.researchNotice} /></p>
+      <p class="small" id="ck-counts"></p>
+      <div class="ck-actions">
+        <button class="btn small" id="ck-remove-pending" type="button"><T {...S.removePending} /></button>
+        <button class="btn small" id="ck-remove-history" type="button"><T {...S.removeHistory} /></button>
+        <button class="btn small" id="ck-withdraw" type="button"><T {...S.withdraw} /></button>
+        <button class="btn ghost small" id="ck-fresh" type="button"><T {...S.fresh} /></button>
+      </div>
+      <p class="small" id="ck-research-status" aria-live="polite"></p>
+    </details>
+
+    <dialog class="ck-dialog" id="ck-dialog">
+      <form method="dialog">
+        <p class="small" id="ck-dialog-head"></p>
+        <pre id="ck-dialog-body"></pre>
+        <button class="btn primary" value="close"><T {...S.close} /></button>
+      </form>
+    </dialog>
+  </div>
+</Base>
+
+<script src="../../scripts/check.ts"></script>
+
+<style>
+  .check {
+    padding-top: 14px;
+    padding-bottom: 40px;
+    max-width: 980px;
+  }
+  .ck-setup h1 {
+    margin: 4px 0 8px;
+  }
+  .lede {
+    max-width: 680px;
+  }
+  .small {
+    font-size: 0.85rem;
+  }
+  .ck-panel {
+    padding: 20px 22px;
+    display: grid;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+  legend {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .ck-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ck-choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    cursor: pointer;
+    background: var(--surface);
+  }
+  .ck-choice:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .ck-choice input {
+    accent-color: var(--accent);
+    margin: 0;
+  }
+  .ck-details summary,
+  .ck-research summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .ck-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .ck-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ck-titles {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+    min-width: 0;
+  }
+  .ck-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 6px;
+    background: var(--bg-2);
+    overflow: hidden;
+    min-width: 60px;
+  }
+  .ck-bar span {
+    display: block;
+    height: 100%;
+    width: calc(var(--p, 0) * 100%);
+    background: var(--accent);
+    border-radius: 6px;
+    transition: width 0.4s ease;
+  }
+  .ck-buttons {
+    display: flex;
+    gap: 6px;
+  }
+  .ck-step {
+    margin-top: 14px;
+    padding: 14px 18px;
+    border: 2px solid var(--accent);
+    background: var(--accent-soft);
+  }
+  .ck-step p {
+    margin: 4px 0 0;
+  }
+  .ck-card {
+    margin-top: 14px;
+    padding: 22px 26px;
+    min-height: 220px;
+  }
+  .ck-credit {
+    font-size: 0.82rem;
+    margin: 0 0 8px;
+  }
+  .ck-prompt {
+    font-size: clamp(1.25rem, 3vw, 1.7rem);
+    line-height: 1.9;
+    max-height: calc(1.9em * 6);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    scrollbar-width: thin;
+  }
+  .ck-prompt :global(.ok) {
+    color: var(--ok);
+  }
+  .ck-prompt :global(.bad) {
+    color: var(--bad);
+    background: var(--bad-soft);
+    border-radius: 3px;
+  }
+  .ck-prompt :global(.todo) {
+    color: var(--muted);
+  }
+  .ck-prompt :global(.caret) {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    margin: 0 -1px;
+    vertical-align: -0.2em;
+    background: var(--accent);
+  }
+  .ck-probe-task {
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+  .ck-block {
+    display: grid;
+    gap: 4px;
+    justify-content: center;
+    justify-items: start; /* leading gaps then give each row its keyboard stagger */
+  }
+  .ck-block :global(.row) {
+    display: flex;
+    gap: 4px;
+  }
+  .ck-block :global(.k),
+  .ck-block :global(.gap) {
+    flex: none;
+    width: calc(var(--w, 1) * 42px + (var(--w, 1) - 1) * 4px);
+  }
+  .ck-block :global(.k) {
+    position: relative;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--key-edge);
+    border-radius: 8px;
+    background: var(--key);
+    color: var(--key-ink);
+    font-size: 0.85rem;
+  }
+  .ck-block :global(.k.cue) {
+    background: var(--bg-2);
+  }
+  .ck-block :global(.k.next) {
+    outline: 3px solid var(--accent);
+    outline-offset: -2px;
+    background: var(--accent-soft);
+  }
+  .ck-block :global(.k.good) {
+    background: var(--ok-soft);
+  }
+  .ck-block :global(.k.wrong) {
+    background: var(--bad-soft);
+  }
+  .ck-block :global(.k.down) {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  .ck-block :global(.k sup) {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  .ck-probe-feedback {
+    margin: 12px 0 0;
+    min-height: 1.4em;
+  }
+  .ck-hint {
+    margin-top: 10px;
+    font-size: 0.92rem;
+  }
+  .ck-result {
+    margin-top: 8px;
+  }
+  .ck-result :global(.tiles) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .ck-result :global(.tile) {
+    padding: 14px 16px;
+  }
+  .ck-result :global(.tile b) {
+    display: block;
+    font-size: 1.7rem;
+    line-height: 1.2;
+  }
+  .ck-result :global(ul) {
+    padding-left: 1.2em;
+    line-height: 1.7;
+  }
+  .ck-share {
+    margin-top: 16px;
+    padding: 18px 22px;
+  }
+  .ck-share h2 {
+    font-size: 1.2rem;
+    margin: 0 0 6px;
+  }
+  .ck-research {
+    margin-top: 28px;
+  }
+  .ck-dialog {
+    width: min(900px, calc(100vw - 32px));
+    max-height: calc(100vh - 64px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 16px;
+  }
+  .ck-dialog pre {
+    max-height: 60vh;
+    overflow: auto;
+    font-size: 0.78rem;
+    background: var(--surface-2);
+    padding: 10px;
+    border-radius: 8px;
+  }
+  @media (max-width: 640px) {
+    .ck-card {
+      padding: 16px;
+    }
+    .ck-block :global(.k),
+    .ck-block :global(.gap) {
+      width: calc(var(--w, 1) * 22px + (var(--w, 1) - 1) * 3px);
+    }
+    .ck-block :global(.k) {
+      height: 30px;
+      font-size: 0.7rem;
+    }
+    .ck-block,
+    .ck-block :global(.row) {
+      gap: 3px;
+    }
+  }
+</style>

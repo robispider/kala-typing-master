@@ -2,6 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import T from '../../components/T.astro';
 import LayoutCards from '../../components/LayoutCards.astro';
+import { S } from '../../lib/check/strings.ts';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 <Base title="Learn · Kala Learn">
   <section class="wrap head">
@@ -17,6 +20,15 @@ import LayoutCards from '../../components/LayoutCards.astro';
   <section class="wrap">
     <LayoutCards />
   </section>
+  <section class="wrap">
+    <div class="card check">
+      <div>
+        <h2><T {...S.title} /></h2>
+        <p class="muted"><T {...S.entry} /></p>
+      </div>
+      <a class="btn" href={`${base}check/`}><T {...S.open} /></a>
+    </div>
+  </section>
 </Base>
 
 <style>
@@ -27,5 +39,21 @@ import LayoutCards from '../../components/LayoutCards.astro';
   .lede {
     max-width: 46em;
     font-size: 1.05rem;
+  }
+  .check {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin-top: 24px;
+    padding: 18px 22px;
+  }
+  .check h2 {
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+  }
+  .check p {
+    margin: 0;
   }
 </style>

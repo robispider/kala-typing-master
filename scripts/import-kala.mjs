@@ -260,6 +260,31 @@ for (const [key, authorWorks] of [...byAuthor].sort((a, b) => excerptCount(b[1])
   });
 }
 
+// ---- Typing skill check: Kala's current prompt bank, reduced to the forms validated for these layouts.
+// bank_sha256 in a research package names the authoritative bank file, so its hash is kept here.
+const checkBankFile = join(app, 'learning-packs', 'kala.bn-typing-check', '1.4.0', 'prompts.json');
+const checkBank = read(checkBankFile);
+const checkHashes = new Set(layouts.map((l) => l.sourceSha256));
+const checkVariants = checkBank.variants.filter((v) => checkHashes.has(v.layout_hash));
+const checkIds = new Set(checkVariants.flatMap((v) => Object.values(v.stages).flat()));
+sizes['bn/check.json'] = write(join(pubData, 'bn', 'check.json'), {
+  schema: checkBank.schema,
+  version: checkBank.version,
+  protocol_version: checkBank.protocol_version,
+  bank_sha256: sha256(checkBankFile),
+  anchors: checkBank.anchors.filter((id) => checkIds.has(id)),
+  prompts: checkBank.prompts.filter((p) => checkIds.has(p.id)).map((p) => ({
+    id: p.id,
+    version: p.version,
+    text: p.text,
+    passage: p.passage ? { id: p.passage.id, order: p.passage.order } : null,
+    family: p.provenance?.family_id ?? null,
+    author: p.provenance?.authors[0] ?? null,
+    title: p.provenance?.titles[0] ?? null,
+  })),
+  variants: checkVariants.map((v) => ({ id: v.id, layout_hash: v.layout_hash, stages: v.stages })),
+});
+
 // ---- Licences and notices travel with the derived content.
 const licenses = join(root, 'public', 'licenses');
 mkdirSync(licenses, { recursive: true });
@@ -267,6 +292,7 @@ copyFileSync(join(app, 'NOTICE-KALA-LAYOUTS.txt'), join(licenses, 'NOTICE-KALA-L
 copyFileSync(join(literature, 'LICENSE.txt'), join(licenses, 'kala.bn-literature-LICENSE.txt'));
 copyFileSync(join(literature, 'LICENSE-CORE.txt'), join(licenses, 'kala.bn-core-LICENSE.txt'));
 copyFileSync(join(english, 'LICENSE.txt'), join(licenses, 'kala.en-touch-LICENSE.txt'));
+copyFileSync(join(dirname(checkBankFile), 'LICENSE.txt'), join(licenses, 'kala.bn-typing-check-LICENSE.txt'));
 
 // ---- Build-time catalog (bundled into pages; small).
 mkdirSync(srcData, { recursive: true });

@@ -1,0 +1,3 @@
+Original public-domain literature with embedded per-work attribution and exact source slices.
+Authored coverage probes retain CC0-1.0.
+Connected-passage protocol r4 is a separate results series from earlier short-excerpt checks.

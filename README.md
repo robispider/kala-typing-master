@@ -10,6 +10,7 @@ It uses the current Kala desktop course content and logic:
 - **Scoring**: `src/lib/scoring.ts` ports `TextScoring` (`kala-grapheme-v1`). It uses .NET 8 grapheme units, so ক্ষ counts as two units, plus NFC and the same alignment tie-break. It deliberately does not use `Intl.Segmenter`.
 - **Key recipes**: `src/lib/recipe.ts` finds the shortest key sequence by replaying keys through the decoder, including Backspace recovery after a mistake.
 - **Library**: 1,474 reviewed "train" excerpts from 12 authors, with source credits. Check/assessment partitions are not published.
+- **Typing skill check**: `src/lib/check/` ports Kala's study code: prompt bank `kala.bn-typing-check` 1.4.0 (forms validated for Kala Goti, Kala Jhor and UniJoy), protocol `2026.10-bhe-pilot-r3` with schedule `bhe-task-schedule-2` (warm-up, passage, targeted and physical-key blocks, passage, anchor repeat, with a fresh Enter between timed steps), `SkillCheckScorer` and the `kala.typing-check.session/2` package. The result is added to Learn. After the result the person may preview and send that one check to Kala's research API (`GET /config`, `POST /sessions`, `DELETE /contributors/{id}`); nothing is recorded outside the check or sent without that choice. Packages say they come from the browser: `kala_version` ends in `-web`, `wave` is `bhe-web-pilot-1`, and limitations include `browser-client` and `browser-event-timing`. Set `PUBLIC_RESEARCH_ENDPOINT` at build time to use another research server.
 
 ## Pages
 
@@ -19,6 +20,7 @@ It uses the current Kala desktop course content and logic:
 | `/learn/` and `/learn/<layout>/` | Layout choice, learning path, finger-coloured key map and typing rules |
 | `/practice/<layout>/?step=…` | Practice: meet new keys → path micro-lessons → guided words → recall from memory |
 | `/library/` | Literature by author and work; typing resumes where you left off |
+| `/check/` | Typing skill check: Kala's 4 min 20 s research protocol, result, optional sharing for research |
 | `/progress/` | Streak, time, accuracy, key confidence map, session history, backup and restore |
 | `/about/` | Sources, faithfulness notes, licences |
 

@@ -23,8 +23,11 @@ It uses the current Kala desktop course content and logic:
 | `/check/` | Typing skill check: Kala's 4 min 20 s research protocol, result, optional sharing for research |
 | `/progress/` | Streak, time, accuracy, key confidence map, session history, backup and restore |
 | `/about/` | Sources, faithfulness notes, licences |
+| `/research/` | Local B01/B02 physical-keyboard pilot: guided practice, separate ordinary/vowel blocks, copyable report and full JSON download |
 
 The interface is available in English and Bangla, with light and dark themes. It supports physical and on-screen keyboards, works at phone width and respects reduced motion.
+
+The **Research** link is the last navigation item; an entry card also appears at the end of the home page. This experimental pilot requires a physical keyboard. It reuses the composer, recipe finder, keyboard, study recorder and scorer, with its own local report format. It does not use the existing study upload endpoint or add course progress. See [the research protocol and report guide](RESEARCH.md). To refresh the two frozen maps from the sibling research repository, run `node scripts/import-shared-candidates.mjs ../kala-layout`.
 
 ## Develop
 

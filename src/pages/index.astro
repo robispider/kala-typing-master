@@ -88,6 +88,13 @@ const excerpts = library.reduce((n, a) => n + a.excerpts, 0);
     </div>
   </section>
 
+  <section class="wrap section card research-card">
+    <p class="eyebrow"><T en="Research" bn="গবেষণা" /></p>
+    <h2><T en="Try one arrangement with two typing styles" bn="দুই টাইপিং শৈলীর জন্য একই বিন্যাস যাচাই করুন" /></h2>
+    <p class="muted narrow"><T en="Help compare the experimental B01 and B02 layouts on your physical keyboard. Start with next-key guidance, then copy your personal report. No memorization needed to begin." bn="নিজের কিবোর্ডে পরীক্ষামূলক B01 ও B02 তুলনা করুন। কোন কি চাপবেন তা দেখিয়ে দেওয়া হবে; শেষে নিজের প্রতিবেদন কপি করুন। শুরু করতে বিন্যাস মুখস্থ লাগবে না।" /></p>
+    <a class="btn" href={`${base}research/`}><T en="Open the research test" bn="গবেষণার পরীক্ষা খুলুন" /></a>
+  </section>
+
   <p class="wrap tiny muted">
     <T en={`Course content: ${source.packs[0].id} ${source.packs[0].version} and ${source.packs[1].id} ${source.packs[1].version}.`} bn={`পাঠ্যক্রম: ${source.packs[0].id} ${source.packs[0].version} ও ${source.packs[1].id} ${source.packs[1].version}।`} />
   </p>
@@ -116,6 +123,7 @@ const excerpts = library.reduce((n, a) => n + a.excerpts, 0);
 </script>
 
 <style>
+  .research-card { padding: 28px; }
   .hero {
     display: grid;
     grid-template-columns: 1.05fr 1fr;

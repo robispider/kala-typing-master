@@ -1,4 +1,4 @@
-// Local, versioned B01/B02 pilot. Reuse the published browser decoder, recipe search, recorder and
+// Local, versioned Goti/Jhor pilot on the fixed B01 map. Reuse the browser decoder, recipe search, recorder and
 // scorer; experimental captures are deliberately wrapped in their own format, never the upload API.
 import snapshot from '../data/shared-candidates.json' with { type: 'json' };
 import { charTypes, layoutById, type Layout } from './catalog.ts';
@@ -9,8 +9,8 @@ import { Recorder, type KeyInput, type SessionPackage } from './check/recorder.t
 import { activeDuration, canonical, scoreCheck } from './check/scorer.ts';
 import { correctGpm, speedQualifies } from './scoring.ts';
 
-export const PROTOCOL = 'shared-physical-pilot-v1';
-export const BANK = 'shared-authored-pilot-1';
+export const PROTOCOL = 'b01-style-pilot-v2';
+export const BANK = 'b01-style-authored-pilot-2';
 export const DURATION_MS = 60_000;
 export type Candidate = 'B01' | 'B02';
 export type Style = 'A' | 'D';
@@ -20,12 +20,13 @@ export const candidates = snapshot.candidates;
 export const LIMITATIONS = [
   'single-participant-exploratory', 'browser-event-timing', 'system-input-must-be-english',
   'traditional-finger-guide-not-model-optimal-fingering', 'fingers-not-observed',
-  'authored-unvalidated-bank', 'passages-repeated-across-candidates', 'learning-and-carryover',
+  'authored-unvalidated-bank', 'passages-repeated-across-styles', 'learning-and-carryover',
   'targeted-vowel-text-not-natural-frequency', 'not-a-trained-speed-or-population-claim',
 ];
 
 // These new authored forms are separate from both frozen search corpora and Kala's ordinary checks.
-// Both candidates receive both forms. Different source forms are never pooled as independent users.
+// Both styles receive both forms. Different source forms are never pooled as independent users.
+export const VOWEL_SIGNS = [...'ািীুূৃেৈোৌ'];
 export const FORMS = {
   practice: ['আমরা বাংলা লিখি। বই পড়ি। নৌকা চলে। সৈনিক আসে। ঐক্য চাই। ঔষধ রাখি।'],
   ordinary: [
@@ -33,8 +34,8 @@ export const FORMS = {
     'বিকেলে আমরা বাড়ির পাশে একটি গাছ লাগালাম। ছোট ভাই জল নিয়ে এল, আর আমি মাটি তৈরি করলাম। কাজের পরে সবাই বারান্দায় বসে গল্প শুনলাম। দূরের মাঠে কয়েকটি পাখি দেখা গেল। রাত হলে আমরা বই গুছিয়ে রাখব এবং আগামী দিনের কাজ ঠিক করব।',
   ],
   'vowel-diagnostic': [
-    'নৌকা মৌমাছি সৈনিক বৈঠক নৈশ দৈনিক গৌরব সৌরভ ঐক্য ঔষধ। নৌকায় করে সৈনিক এল। বৈঠকে ঐক্যের কথা হল। মৌমাছি ফুলে বসে। দৈনিক কাজ শেষে সৌরভ বই পড়ে।',
-    'মৌসুম বৈশাখ নৌবাহিনী শৈশব দৈব সৌজন্য ভৌগোলিক বৈজ্ঞানিক ঐতিহ্য ঔদার্য। বৈশাখে নৌকা চলে। শৈশবের কথা মনে পড়ে। সৌজন্য ও ঐক্য বজায় রাখি। বৈজ্ঞানিক কাজের গৌরব আছে।',
+    'আমি আকাশ দেখি। বই পড়ি। খাই আর যাই। তিনিই এখানে আছেন। কেউ নেই। একই কথা আবার বলি। দুই ভাই একসঙ্গে আসে। ইট ঈদ উট ঊনিশ ঋতু এক ঐক্য ওজন ঔষধ। কি কী কু কূ কৃ কে কৈ কো কৌ।',
+    'আলো আসে। আমি বই নিয়ে যাই। তিনিই বইটি পড়েন। কেউ কথা বলে। খেয়ে এসে লিখি। দুই বোন একই বাড়িতে থাকে। অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ। মা মি মী মু মূ মৃ মে মৈ মো মৌ।',
   ],
 } satisfies Record<Role, string[]>;
 
@@ -70,9 +71,9 @@ export async function hashLayout(layout: Layout): Promise<string> {
   return [...new Uint8Array(digest)].map((n) => n.toString(16).padStart(2, '0')).join('');
 }
 
-export function plan(sessionNumber: number): { block: number; candidate: Candidate; form: number }[] {
-  const order: Candidate[] = sessionNumber % 2 ? ['B01', 'B02', 'B02', 'B01'] : ['B02', 'B01', 'B01', 'B02'];
-  return order.map((candidate, block) => ({ block, candidate, form: block % 2 }));
+export function plan(sessionNumber: number): { block: number; candidate: 'B01'; style: Style; form: number }[] {
+  const order: Style[] = sessionNumber % 2 ? ['A', 'D', 'D', 'A'] : ['D', 'A', 'A', 'D'];
+  return order.map((style, block) => ({ block, candidate: 'B01', style, form: block % 2 }));
 }
 
 export interface TrialOptions {
@@ -182,7 +183,7 @@ export class Trial {
     }
     const sign = this.composer.charOf(vk, shift);
     const time = this.recordNow();
-    if (!repeated && (sign === 'ৈ' || sign === 'ৌ') && this.priorKeyAt !== null) this.vowelIntervals.push({ sign, ms: time - this.priorKeyAt });
+    if (!repeated && sign && VOWEL_SIGNS.includes(sign) && this.priorKeyAt !== null) this.vowelIntervals.push({ sign, ms: time - this.priorKeyAt });
     this.priorKeyAt = time;
     if (vk === BACKSPACE) {
       this.recorder.text(this.typed.slice(0, -1), seq, 'native-key');
@@ -258,15 +259,15 @@ const median = (values: number[]) => {
   const i = Math.floor(sorted.length / 2);
   return !sorted.length ? null : sorted.length % 2 ? sorted[i] : (sorted[i - 1] + sorted[i]) / 2;
 };
-export function aggregate(trials: TrialResult[], candidate: Candidate, role: Exclude<Role, 'practice'>) {
-  const rows = trials.filter((r) => r.candidate === candidate && r.role === role);
+export function aggregate(trials: TrialResult[], candidate: Candidate, role: Exclude<Role, 'practice'>, style?: Style) {
+  const rows = trials.filter((r) => r.candidate === candidate && r.role === role && (style === undefined || r.style === style));
   if (new Set(rows.map((r) => `${r.style}:${r.assistance}`)).size > 1) throw new Error('Do not pool different styles or assistance');
   const sum = (key: keyof Metrics) => rows.reduce((n, r) => n + r.metrics[key], 0);
   const max = Math.max(sum('referenceUnits'), sum('responseUnits'));
   const ms = sum('activeMs');
   const intact = rows.length ? rows.every((r) => r.capture.integrity.text_replay_ok && r.capture.integrity.dropped_events === 0) : null;
   return {
-    candidate, role, trials: rows.length, completedTrials: rows.filter((r) => r.ended === 'completed').length,
+    candidate, style: style ?? rows[0]?.style ?? null, role, trials: rows.length, completedTrials: rows.filter((r) => r.ended === 'completed').length,
     activeSeconds: ms / 1000, attemptedUnits: sum('referenceUnits'), matches: sum('matches'),
     accuracy: intact && max ? 100 * Math.max(0, 1 - sum('distance') / max) : null,
     correctGpm: intact && speedQualifies(ms, sum('referenceUnits')) ? correctGpm(sum('matches'), ms) : null,
@@ -274,7 +275,9 @@ export function aggregate(trials: TrialResult[], candidate: Candidate, role: Exc
     backspaces: sum('backspaces'), correctionEpisodes: sum('correctionEpisodes'),
     hints: rows.reduce((n, r) => n + r.hintCues, 0),
     cueFollowed: rows.reduce((n, r) => n + r.cueFollowed, 0), cueCompared: rows.reduce((n, r) => n + r.cueCompared, 0),
-    vowelTiming: ['ৈ', 'ৌ'].map((sign) => {
+    physicalKeyDowns: rows.reduce((n, r) => n + r.capture.key_events.rows.filter((k) => k[5] === 0).length, 0),
+    shiftKeyDowns: rows.reduce((n, r) => n + r.capture.key_events.rows.filter((k) => k[5] === 0 && (k[2] === 160 || k[2] === 161)).length, 0),
+    vowelTiming: VOWEL_SIGNS.map((sign) => {
       const values = rows.flatMap((r) => r.vowelIntervals.filter((v) => v.sign === sign).map((v) => v.ms));
       return { sign, samples: values.length, medianIncomingMs: median(values) };
     }),
@@ -284,22 +287,24 @@ export function aggregate(trials: TrialResult[], candidate: Candidate, role: Exc
 }
 
 export interface ResearchReport {
-  schema: 'kala.shared-layout-pilot/1'; protocol: string; bank: string;
+  schema: 'kala.b01-style-pilot/2'; protocol: string; bank: string;
   session: {
-    id: string; number: number; startedUtc: string; appVersion: string; style: Style; assistance: Assistance;
+    id: string; number: number; startedUtc: string; appVersion: string; candidate: 'B01'; assistance: Assistance;
+    previousStyleExperience: string;
     experience: string; keyboard: TrialOptions['keyboard']; fingering: string; priorReports: number;
-    order: Candidate[]; completion: 'completed' | 'stopped'; storageAvailable: boolean;
+    order: Style[]; completion: 'completed' | 'stopped'; storageAvailable: boolean;
     exposureBefore: Record<string, number>;
   };
-  maps: { label: string; id: string; sourceSha256: string; physicalMapSha256: string; runtimeHash: string; ruleTemplateHash: string }[];
+  maps: { label: string; id: string; style: Style; sourceSha256: string; physicalMapSha256: string; runtimeHash: string; ruleTemplateHash: string }[];
   limitations: string[]; trials: TrialResult[];
-  blocks: { block: number; candidate: Candidate; comfort: number | null; notes: string }[];
+  blocks: { block: number; candidate: 'B01'; style: Style; comfort: number | null; notes: string }[];
+  preference: 'A' | 'D' | 'equal' | 'unsure';
 }
 
 /** Pasteable data contains denominators, raw counts and each trial, not only a winner or WPM. */
 export function reportText(report: ResearchReport): string {
-  const summaries = (['B01', 'B02'] as const).flatMap((candidate) =>
-    (['ordinary', 'vowel-diagnostic'] as const).map((role) => aggregate(report.trials, candidate, role)));
+  const summaries = (['A', 'D'] as const).flatMap((style) =>
+    (['ordinary', 'vowel-diagnostic'] as const).map((role) => aggregate(report.trials, 'B01', role, style)));
   const trialRows = report.trials.map(({ capture, ...r }) => ({
     ...r, capture: {
       integrity: capture.integrity, qualityFlags: capture.qualityFlags,
@@ -309,13 +314,14 @@ export function reportText(report: ResearchReport): string {
     },
   }));
   return [
-    'KALA SHARED LAYOUT PHYSICAL PILOT — COPY THIS WHOLE REPORT',
+    'KALA B01 GOTI / JHOR STYLE PILOT — COPY THIS WHOLE REPORT',
+    'B01 key positions are fixed. Goti (A) and Jhor (D) entry rules are the experimental comparison.',
     'Guided data measures assisted typing. Recall data is not proof of expert performance.',
     'Ordinary and deliberately vowel-heavy text are separate. Repeated forms and learning carryover are recorded.',
     'Accuracy/speed do not measure comfort; ratings are self-reported. No overall winner is assigned.',
-    'Correct GPM is hidden below 60 active seconds or 100 attempted target units per candidate and role.',
+    'Correct GPM is hidden below 60 active seconds or 100 attempted target units per style and role.',
     'Raw key/text streams are in the separate full JSON download, not in this compact copy.',
     JSON.stringify({ ...report, trials: trialRows, summaries }, null, 2),
-    'END KALA SHARED LAYOUT PHYSICAL PILOT',
+    'END KALA B01 STYLE PILOT',
   ].join('\n');
 }

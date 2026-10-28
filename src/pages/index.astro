@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import T from '../components/T.astro';
 import TryIt from '../components/TryIt.astro';
 import LayoutCards from '../components/LayoutCards.astro';
+import LayoutConfidence from '../components/LayoutConfidence.astro';
 import library from '../data/library.json';
 import source from '../data/source.json';
 
@@ -39,14 +40,9 @@ const excerpts = library.reduce((n, a) => n + a.excerpts, 0);
   </section>
 
   <section class="wrap section">
-    <p class="eyebrow"><T en="Choose your keyboard" bn="আপনার কিবোর্ড বেছে নিন" /></p>
-    <h2><T en="Four layouts, one gentle path" bn="চারটি লেআউট, একটি সহজ পথ" /></h2>
-    <p class="muted narrow">
-      <T
-        en="Kala Goti and Kala Jhor were arranged by computer search for far less finger travel. UniJoy is the familiar classic. Each follows its own reviewed teaching path."
-        bn="Kala গতি ও Kala ঝড় কম্পিউটার-অনুসন্ধানে সাজানো, আঙুলের চলাচল অনেক কম। ইউনিজয় পরিচিত ক্লাসিক। প্রতিটির নিজস্ব পর্যালোচিত শিক্ষাপথ আছে।"
-      />
-    </p>
+    <p class="eyebrow"><T en="Meet Kala Layout" bn="কালা লেআউটের সঙ্গে পরিচিত হোন" /></p>
+    <h2><T en="Designed through research. Made for fluent typing." bn="গবেষণায় সাজানো। সাবলীল টাইপিংয়ের জন্য।" /></h2>
+    <LayoutConfidence />
     <LayoutCards />
   </section>
 
@@ -91,7 +87,7 @@ const excerpts = library.reduce((n, a) => n + a.excerpts, 0);
   <section class="wrap section card research-card">
     <p class="eyebrow"><T en="Research" bn="গবেষণা" /></p>
     <h2><T en="Try one arrangement with two typing styles" bn="দুই টাইপিং শৈলীর জন্য একই বিন্যাস যাচাই করুন" /></h2>
-    <p class="muted narrow"><T en="Help compare the experimental B01 and B02 layouts on your physical keyboard. Start with next-key guidance, then copy your personal report. No memorization needed to begin." bn="নিজের কিবোর্ডে পরীক্ষামূলক B01 ও B02 তুলনা করুন। কোন কি চাপবেন তা দেখিয়ে দেওয়া হবে; শেষে নিজের প্রতিবেদন কপি করুন। শুরু করতে বিন্যাস মুখস্থ লাগবে না।" /></p>
+    <p class="muted narrow"><T en="Try the provisional B01 arrangement with Goti and Jhor entry rules on your physical keyboard. Positions stay the same. Start with guidance, then copy your personal report." bn="নিজের কিবোর্ডে আপাতত নির্বাচিত B01-তে গতি ও ঝড়ের লেখার নিয়ম যাচাই করুন। অবস্থান একই থাকবে। শুরুতে সাহায্য পাবেন; শেষে নিজের প্রতিবেদন কপি করুন।" /></p>
     <a class="btn" href={`${base}research/`}><T en="Open the research test" bn="গবেষণার পরীক্ষা খুলুন" /></a>
   </section>
 

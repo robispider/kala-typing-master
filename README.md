@@ -4,13 +4,13 @@ Interactive Bangla and English touch-typing course for the browser, built with [
 
 It uses the current Kala desktop course content and logic:
 
-- **Courses and teaching paths** from `kala.bn-literature` 1.1.0 (the migration baseline in the feasibility study) and `kala.en-touch` 1.0.0. Pack hashes are verified against their manifests on import.
-- **Layouts**: Kala Goti, Kala Jhor, UniJoy and QWERTY, with their own "how to type" rules and examples.
+- **Courses and teaching paths** from `kala.bn-literature` 1.1.1 (the shared-layout revision of the 1.1.0 migration baseline) and `kala.en-touch` 1.0.0. Pack hashes and teaching-path layout hashes are verified on import.
+- **Layouts**: Kala Goti and Kala Jhor use the same provisional **Kala Layout** B01 arrangement (`shared-76c9b9dbfc689d0b`), with distinct hasant/sign and context-vowel typing styles. UniJoy and QWERTY remain available. The importer derives bilingual examples from actual key positions, including Goti `S D O A` and Jhor `D O A` for আমি.
 - **Decoder**: `src/lib/composer.ts` is a port of `FixedLayoutManager` (pass-through and suppression rules, sequences, style D context vowels with run pairing, Backspace continuation).
 - **Scoring**: `src/lib/scoring.ts` ports `TextScoring` (`kala-grapheme-v1`). It uses .NET 8 grapheme units, so ক্ষ counts as two units, plus NFC and the same alignment tie-break. It deliberately does not use `Intl.Segmenter`.
 - **Key recipes**: `src/lib/recipe.ts` finds the shortest key sequence by replaying keys through the decoder, including Backspace recovery after a mistake.
 - **Library**: 1,474 reviewed "train" excerpts from 12 authors, with source credits. Check/assessment partitions are not published.
-- **Typing skill check**: `src/lib/check/` ports Kala's study code: prompt bank `kala.bn-typing-check` 1.4.0 (forms validated for Kala Goti, Kala Jhor and UniJoy), protocol `2026.10-bhe-pilot-r3` with schedule `bhe-task-schedule-2` (warm-up, passage, targeted and physical-key blocks, passage, anchor repeat, with a fresh Enter between timed steps), `SkillCheckScorer` and the `kala.typing-check.session/2` package. The result is added to Learn. After the result the person may preview and send that one check to Kala's research API (`GET /config`, `POST /sessions`, `DELETE /contributors/{id}`); nothing is recorded outside the check or sent without that choice. Packages say they come from the browser: `kala_version` ends in `-web`, `wave` is `bhe-web-pilot-1`, and limitations include `browser-client` and `browser-event-timing`. Set `PUBLIC_RESEARCH_ENDPOINT` at build time to use another research server.
+- **Typing skill check**: `src/lib/check/` ports Kala's study code: prompt bank `kala.bn-typing-check` 1.4.1 (forms validated for Kala Goti, Kala Jhor and UniJoy), protocol `2026.10-bhe-pilot-r3` with schedule `bhe-task-schedule-2` (warm-up, passage, targeted and physical-key blocks, passage, anchor repeat, with a fresh Enter between timed steps), `SkillCheckScorer` and the `kala.typing-check.session/2` package. The result is added to Learn. After the result the person may preview and send that one check to Kala's research API (`GET /config`, `POST /sessions`, `DELETE /contributors/{id}`); nothing is recorded outside the check or sent without that choice. Packages say they come from the browser: `kala_version` ends in `-web`, `wave` is `bhe-web-pilot-1`, and limitations include `browser-client` and `browser-event-timing`. Set `PUBLIC_RESEARCH_ENDPOINT` at build time to use another research server.
 
 ## Pages
 
@@ -23,7 +23,7 @@ It uses the current Kala desktop course content and logic:
 | `/check/` | Typing skill check: Kala's 4 min 20 s research protocol, result, optional sharing for research |
 | `/progress/` | Streak, time, accuracy, key confidence map, session history, backup and restore |
 | `/about/` | Sources, faithfulness notes, licences |
-| `/research/` | Local B01/B02 physical-keyboard pilot: guided practice, separate ordinary/vowel blocks, copyable report and full JSON download |
+| `/research/` | Fixed B01 map, Goti versus Jhor entry rules: guided practice, separate ordinary/vowel blocks, copyable report and full JSON download |
 
 The interface is available in English and Bangla, with light and dark themes. It supports physical and on-screen keyboards, works at phone width and respects reduced motion.
 
@@ -52,6 +52,7 @@ npm run import:kala -- ../kala
 
 ## Prototype limits
 
+- The shared-map transition archives earlier Goti/Jhor positional progress in backups, keeps past sessions labelled with their mapping identity, and starts fresh key confidence. Reading bookmarks, preferences, UniJoy and QWERTY progress are preserved.
 - Progress uses `localStorage` with a downloadable JSON backup. IndexedDB, offline caching and desktop-profile import are not built yet.
 - Progression is simplified: 90% accuracy in the recall part completes a step. Kala's full adaptive planner and milestone checks are not ported.
 - Browser speed and accuracy are practice feedback. They are not validated as equivalent to desktop assessments.

@@ -1,6 +1,14 @@
 // Learner progress, kept only in this browser (localStorage). No account, no server.
 // Saves report failure visibly; a JSON backup can be downloaded and restored.
 
+import layouts from '../data/layouts.json' with { type: 'json' };
+
+const currentHashes = Object.fromEntries(layouts.map((layout) => [layout.id, layout.sourceSha256]));
+const originalHashes: Record<string, string> = {
+  'kala-goti': '14742dd1776033ca4ad93d17239e4cd40e65132b229ae896e8c797c9e3ad6e5a',
+  'kala-jhor': 'c8f9eb5d2d32756c858878dfd6f1c701e970a1250ab53755ff34fcae0f2adbe1',
+};
+
 export const STORE_KEY = 'kala-learn:v1';
 export const SCHEMA = 1;
 
@@ -21,9 +29,11 @@ export interface SessionRecord {
   wpm: number | null;
   qualified: boolean;
   units: number;
+  mappingHash?: string;
 }
 
 export interface LayoutProgress {
+  mappingHash?: string;
   completed: string[]; // journey step ids
   best: Record<string, number>; // step id -> best accuracy
   units: Record<string, UnitEvidence>;
@@ -39,6 +49,7 @@ export interface Progress {
   lang: 'en' | 'bn';
   settings: { hints: boolean; keyboard: boolean; hands: boolean; pastel: boolean; theme: 'auto' | 'light' | 'dark' };
   layouts: Record<string, LayoutProgress>;
+  layoutHistory?: Record<string, LayoutProgress>; // former maps retained in backups
   sessions: SessionRecord[];
   days: Record<string, number>; // yyyy-mm-dd -> active ms
 }
@@ -60,18 +71,34 @@ type Listener = (error: string | null) => void;
 const listeners = new Set<Listener>();
 export const onSave = (fn: Listener) => listeners.add(fn);
 
-function upgrade(raw: unknown): Progress {
+export function upgradeProgress(raw: unknown): Progress {
   const base = fresh();
   if (!raw || typeof raw !== 'object') return base;
   const p = raw as Partial<Progress>;
   if (p.schema !== SCHEMA) return base;
-  return { ...base, ...p, settings: { ...base.settings, ...p.settings } };
+  const progress = { ...base, ...p, settings: { ...base.settings, ...p.settings } };
+  for (const [id, originalHash] of Object.entries(originalHashes)) {
+    const previous = progress.layouts[id];
+    const previousHash = previous?.mappingHash ?? originalHash;
+    for (const session of progress.sessions) {
+      if (session.layout === id) session.mappingHash ??= previousHash;
+    }
+    if (previous && previousHash !== currentHashes[id]) {
+      progress.layoutHistory ??= {};
+      progress.layoutHistory[`${id}:${previousHash}`] = { ...previous, mappingHash: previousHash };
+      progress.layouts[id] = {
+        mappingHash: currentHashes[id], completed: [], best: {}, units: {}, keyErrors: {},
+        ...(previous.reading ? { reading: previous.reading } : {}),
+      };
+    }
+  }
+  return progress;
 }
 
 export function load(): Progress {
   if (cache) return cache;
   try {
-    cache = upgrade(JSON.parse(localStorage.getItem(STORE_KEY) ?? 'null'));
+    cache = upgradeProgress(JSON.parse(localStorage.getItem(STORE_KEY) ?? 'null'));
   } catch {
     cache = fresh();
   }
@@ -79,6 +106,7 @@ export function load(): Progress {
 }
 
 export function save(p: Progress = load()) {
+  for (const session of p.sessions) session.mappingHash ??= currentHashes[session.layout];
   cache = p;
   try {
     localStorage.setItem(STORE_KEY, JSON.stringify(p));
@@ -91,7 +119,7 @@ export function save(p: Progress = load()) {
 }
 
 export function layoutProgress(p: Progress, layout: string): LayoutProgress {
-  return (p.layouts[layout] ??= { completed: [], best: {}, units: {}, keyErrors: {} });
+  return (p.layouts[layout] ??= { mappingHash: currentHashes[layout], completed: [], best: {}, units: {}, keyErrors: {} });
 }
 
 export const today = () => new Date().toLocaleDateString('en-CA');
@@ -125,7 +153,7 @@ export function importBackup(json: string): Progress {
   if (data?.app !== 'kala-learn-web' || data.progress?.schema !== SCHEMA) {
     throw new Error('This file is not a Kala Learn backup for this version.');
   }
-  const p = upgrade(data.progress);
+  const p = upgradeProgress(data.progress);
   save(p);
   return p;
 }

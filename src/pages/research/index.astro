@@ -2,23 +2,23 @@
 import Base from '../../layouts/Base.astro';
 import T from '../../components/T.astro';
 ---
-<Base title="Research · B01 / B02 · Kala Learn">
+<Base title="Research · B01 Goti / Jhor · Kala Learn">
   <div class="wrap research" data-research>
     <header class="intro">
       <p class="eyebrow"><T en="Personal research pilot" bn="ব্যক্তিগত গবেষণার প্রাথমিক পরীক্ষা" /></p>
-      <h1><T en="Two candidates. Your hands." bn="দুটি বিন্যাস। আপনার হাতে যাচাই।" /></h1>
-      <p class="lede"><T en="B01 and B02 have one shared arrangement for Goti and Jhor. Only ৈ and ৌ exchange Shift+X and Shift+W. You can start without knowing the layout." bn="B01 ও B02-তে গতি ও ঝড়ের জন্য একই বিন্যাস। শুধু ৈ ও ৌ-এর Shift+X ও Shift+W অবস্থান অদলবদল। বিন্যাস না জেনেই শুরু করতে পারেন।" /></p>
+      <h1><T en="One arrangement. Two typing styles." bn="একটি বিন্যাস। দুই টাইপিং শৈলী।" /></h1>
+      <p class="lede"><T en="B01 is our provisional shared arrangement. Its key positions stay fixed while you compare Goti and Jhor vowel-entry rules. Start with guidance; you do not need to memorize the map first." bn="B01 আপাতত আমাদের যৌথ বিন্যাস। কি-এর অবস্থান একই রেখে গতি ও ঝড়ের স্বরবর্ণ লেখার নিয়ম তুলনা করুন। শুরুতে সাহায্য থাকবে; আগে বিন্যাস মুখস্থ লাগবে না।" /></p>
     </header>
 
     <section id="rs-setup" class="card panel">
       <h2><T en="Practice, then compare" bn="আগে অনুশীলন, তারপর তুলনা" /></h2>
-      <p><T en="Four blocks, two measured minutes each: one minute of ordinary text and one minute of vowel-heavy words. Practice and breaks are untimed. The order reverses next time for the same style and assistance setting." bn="চারটি পর্ব, প্রতিটিতে দুই মিনিটের মাপ: এক মিনিট সাধারণ লেখা, এক মিনিট স্বরচিহ্ন বেশি আছে এমন শব্দ। অনুশীলন ও বিরতির সময় বাঁধা নেই। একই শৈলী ও সাহায্যের সেটিংয়ে পরের পরীক্ষার ক্রম উল্টে যাবে।" /></p>
+      <p><T en="Four blocks: Goti → Jhor → Jhor → Goti, reversed next session with the same assistance. Each block has one measured minute of ordinary text and one of vowel/context exercises. Practice and breaks are untimed. Your feedback may favor a style; there is no automatic universal winner." bn="চারটি পর্ব: গতি → ঝড় → ঝড় → গতি। একই সাহায্যের সেটিংয়ে পরের পরীক্ষায় ক্রম উল্টাবে। প্রতিটিতে এক মিনিট সাধারণ লেখা ও এক মিনিট স্বরবর্ণের নিয়ম যাচাই। অনুশীলন ও বিরতির সময় বাঁধা নেই। মতামত থেকে পছন্দ বোঝা যাবে; সবার জন্য স্বয়ংক্রিয় বিজয়ী নেই।" /></p>
       <div class="notice"><T en="Use a physical keyboard. Switch your system input to English and turn off Kala or another Bangla input app while using this page. This page produces the Bangla itself." bn="আসল কিবোর্ড ব্যবহার করুন। এই পাতায় লেখার সময় সিস্টেমের ইনপুট ইংরেজি করুন এবং Kala বা অন্য বাংলা ইনপুট অ্যাপ বন্ধ রাখুন। পাতাটি নিজেই বাংলা তৈরি করে।" /></div>
       <form id="rs-form">
         <div class="settings">
-          <label><T en="Typing style" bn="টাইপিং শৈলী" /><select id="rs-style"><option value="A">Goti / গতি — hasant + sign → full vowel</option><option value="D">Jhor / ঝড় — context vowels</option></select></label>
+          <label><T en="Previous experience with the entry rules" bn="লেখার নিয়মে আগের অভিজ্ঞতা" /><select id="rs-style-experience"><option value="neither">Neither style / কোনোটিতে নয়</option><option value="goti">Goti or hasant + sign rules / গতি বা হসন্ত + কার</option><option value="jhor">Jhor context-vowel rules / ঝড়ের প্রসঙ্গ-নির্ভর নিয়ম</option><option value="both">Both / দুটিতেই</option></select></label>
           <label><T en="Help during measured blocks" bn="মাপার সময় সাহায্য" /><select id="rs-assistance"><option value="guided">Guided / পরের কি দেখাবে</option><option value="recall">From memory / মনে রেখে, সাহায্য ছাড়া</option></select></label>
-          <label><T en="Experience with B01/B02" bn="B01/B02-তে অভিজ্ঞতা" /><select id="rs-experience"><option value="new">New to these layouts / একেবারে নতুন</option><option value="practicing">Practicing / অনুশীলন করছি</option><option value="comfortable">Comfortable / স্বচ্ছন্দে লিখি</option></select></label>
+          <label><T en="Experience with B01 positions" bn="B01-এর অবস্থানে অভিজ্ঞতা" /><select id="rs-experience"><option value="new">New to B01 / একেবারে নতুন</option><option value="practicing">Practicing / অনুশীলন করছি</option><option value="comfortable">Comfortable / স্বচ্ছন্দে লিখি</option></select></label>
           <label><T en="Keyboard" bn="কিবোর্ড" /><select id="rs-keyboard"><option value="unknown">Choose / বেছে নিন</option><option value="laptop-builtin">Laptop keyboard / ল্যাপটপের কিবোর্ড</option><option value="external">External keyboard / আলাদা কিবোর্ড</option></select></label>
           <label><T en="Fingers you will use" bn="কোন আঙুলে লিখবেন" /><select id="rs-fingering"><option value="usual-fingers">My usual fingers / নিজের অভ্যাসমতো</option><option value="following-traditional-guide">Follow the finger guide / দেখানো আঙুলে</option></select></label>
         </div>
@@ -35,6 +35,7 @@ import T from '../../components/T.astro';
       <p id="rs-ime" class="notice" hidden><T en="Another input method was detected. Switch to English, turn off the Bangla input app, then resume. No typing is recorded while paused." bn="অন্য ইনপুট পদ্ধতি শনাক্ত হয়েছে। ইংরেজি ইনপুট করুন, বাংলা ইনপুট অ্যাপ বন্ধ করুন, তারপর চালু করুন। বিরতিতে কিছু রেকর্ড হয় না।" /></p>
       <div id="rs-typing" class="card panel">
         <p id="rs-role" class="eyebrow"></p>
+        <p id="rs-rule" class="notice"></p>
         <div id="rs-input" tabindex="0" role="textbox" aria-label="Physical typing area" aria-readonly="true" aria-describedby="rs-input-help">
           <div id="rs-prompt" class="bn prompt"></div>
           <p id="rs-typed" class="bn typed"></p>
@@ -59,6 +60,7 @@ import T from '../../components/T.astro';
       <h2><T en="Copy this report back to the conversation" bn="এই প্রতিবেদন কপি করে আলাপে দিন" /></h2>
       <p><T en="It includes the exact maps, style, help, practice, block order, sample sizes, errors and ratings. An unfinished test stays marked unfinished. There is no automatic winner." bn="ঠিক কোন বিন্যাস, শৈলী, সাহায্য, অনুশীলন, পর্বের ক্রম, নমুনার পরিমাণ, ভুল ও মতামত আছে। অসমাপ্ত পরীক্ষা অসমাপ্তই লেখা থাকবে। স্বয়ংক্রিয়ভাবে কাউকে বিজয়ী বলা হবে না।" /></p>
       <div id="rs-summary" class="table-scroll"></div>
+      <label><T en="Which entry style would you choose?" bn="কোন লেখার শৈলী বেছে নেবেন?" /><select id="rs-preference"><option value="unsure">Not sure yet / এখনও নিশ্চিত নই</option><option value="A">Goti / গতি</option><option value="D">Jhor / ঝড়</option><option value="equal">Either is fine / দুটিই ভালো</option></select></label>
       <div class="actions"><button id="rs-copy" type="button" class="btn primary"><T en="Copy report" bn="প্রতিবেদন কপি করুন" /></button><button id="rs-download" type="button" class="btn"><T en="Download full JSON" bn="সম্পূর্ণ JSON নামান" /></button><a class="btn" href="./"><T en="Start another session" bn="আরেকটি পরীক্ষা শুরু করুন" /></a></div>
       <p id="rs-copy-status" role="status"></p>
       <label><T en="Copyable report" bn="কপি করার প্রতিবেদন" /><textarea id="rs-report" readonly rows="16" spellcheck="false"></textarea></label>

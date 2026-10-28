@@ -1,0 +1,664 @@
+{
+  "arrangement_id": "shared-76c9b9dbfc689d0b",
+  "certified_map_sha256": "c00c4dbef480c1a1096c0f93c906398aa469d57b8ccecb0cc06ef491d9ab0e9b",
+  "source_file_sha256": "0570b0ca0f0e72f69920a91c8cd9b04ac6ce5f936becb8b076eb103c3fc5afe0",
+  "certificate": {
+    "classification": "certified neighbourhood non-dominance",
+    "checked_alternatives": 45526,
+    "global_optimality": false
+  },
+  "targets": [
+    {
+      "target": "Kala source",
+      "style": "Goti",
+      "path": "D:\\git repo\\kala\\kala\\layout\\bn\\KalaGoti.json",
+      "variable_positions": 52,
+      "mismatches": [],
+      "all_exported_key_mismatch_count": 0,
+      "canonical_equivalences": [
+        {
+          "key": "C",
+          "layer": "shift",
+          "research": "ড়",
+          "runtime": "ড়"
+        },
+        {
+          "key": "Q",
+          "layer": "shift",
+          "research": "ঢ়",
+          "runtime": "ঢ়"
+        },
+        {
+          "key": "N",
+          "layer": "base",
+          "research": "য়",
+          "runtime": "য়"
+        }
+      ],
+      "map_sha256": "c00c4dbef480c1a1096c0f93c906398aa469d57b8ccecb0cc06ef491d9ab0e9b"
+    },
+    {
+      "target": "Kala rebuilt Release",
+      "style": "Goti",
+      "path": "D:\\git repo\\kala\\kala\\artifacts\\shared-layout\\bin\\Release\\net8.0-windows\\layout\\bn\\KalaGoti.json",
+      "variable_positions": 52,
+      "mismatches": [],
+      "all_exported_key_mismatch_count": 0,
+      "canonical_equivalences": [
+        {
+          "key": "C",
+          "layer": "shift",
+          "research": "ড়",
+          "runtime": "ড়"
+        },
+        {
+          "key": "Q",
+          "layer": "shift",
+          "research": "ঢ়",
+          "runtime": "ঢ়"
+        },
+        {
+          "key": "N",
+          "layer": "base",
+          "research": "য়",
+          "runtime": "য়"
+        }
+      ],
+      "map_sha256": "c00c4dbef480c1a1096c0f93c906398aa469d57b8ccecb0cc06ef491d9ab0e9b"
+    },
+    {
+      "target": "Kala installed",
+      "style": "Goti",
+      "path": "C:\\Users\\doict\\AppData\\Local\\Programs\\Kala\\layout\\bn\\KalaGoti.json",
+      "variable_positions": 52,
+      "mismatches": [
+        {
+          "symbol": "খ",
+          "expected": "N/shift",
+          "actual": "D/shift"
+        },
+        {
+          "symbol": "গ",
+          "expected": "G/base",
+          "actual": "Q/base"
+        },
+        {
+          "symbol": "ঙ",
+          "expected": "V/shift",
+          "actual": "P/shift"
+        },
+        {
+          "symbol": "চ",
+          "expected": "L/shift",
+          "actual": "J/shift"
+        },
+        {
+          "symbol": "ঝ",
+          "expected": "G/shift",
+          "actual": "W/shift"
+        },
+        {
+          "symbol": "ট",
+          "expected": "T/base",
+          "actual": "Z/base"
+        },
+        {
+          "symbol": "ঠ",
+          "expected": "P/shift",
+          "actual": "E/shift"
+        },
+        {
+          "symbol": "ড়",
+          "expected": "C/shift",
+          "actual": "I/shift"
+        },
+        {
+          "symbol": "ঢ",
+          "expected": "T/shift",
+          "actual": "Z/shift"
+        },
+        {
+          "symbol": "ঢ়",
+          "expected": "Q/shift",
+          "actual": "G/shift"
+        },
+        {
+          "symbol": "ণ",
+          "expected": "U/shift",
+          "actual": "S/shift"
+        },
+        {
+          "symbol": "থ",
+          "expected": "J/shift",
+          "actual": "M/shift"
+        },
+        {
+          "symbol": "দ",
+          "expected": "P/base",
+          "actual": "W/base"
+        },
+        {
+          "symbol": "ধ",
+          "expected": "M/shift",
+          "actual": "N/shift"
+        },
+        {
+          "symbol": "ন",
+          "expected": "C/base",
+          "actual": "S/base"
+        },
+        {
+          "symbol": "প",
+          "expected": "I/base",
+          "actual": "O/base"
+        },
+        {
+          "symbol": "ফ",
+          "expected": "O/shift",
+          "actual": "A/shift"
+        },
+        {
+          "symbol": "ব",
+          "expected": "L/base",
+          "actual": "A/base"
+        },
+        {
+          "symbol": "ভ",
+          "expected": "K/shift",
+          "actual": "L/shift"
+        },
+        {
+          "symbol": "ম",
+          "expected": "O/base",
+          "actual": "X/base"
+        },
+        {
+          "symbol": "য",
+          "expected": "R/base",
+          "actual": "N/base"
+        },
+        {
+          "symbol": "য়",
+          "expected": "N/base",
+          "actual": "I/base"
+        },
+        {
+          "symbol": "র",
+          "expected": "F/base",
+          "actual": "D/base"
+        },
+        {
+          "symbol": "ল",
+          "expected": "V/base",
+          "actual": "E/base"
+        },
+        {
+          "symbol": "ষ",
+          "expected": "F/shift",
+          "actual": "U/shift"
+        },
+        {
+          "symbol": "হ",
+          "expected": "W/base",
+          "actual": "P/base"
+        },
+        {
+          "symbol": "্",
+          "expected": "S/base",
+          "actual": "K/base"
+        },
+        {
+          "symbol": "ং",
+          "expected": "I/shift",
+          "actual": "K/shift"
+        },
+        {
+          "symbol": "ঃ",
+          "expected": "Z/shift",
+          "actual": "Q/shift"
+        },
+        {
+          "symbol": "ঁ",
+          "expected": "A/shift",
+          "actual": "O/shift"
+        },
+        {
+          "symbol": "ৎ",
+          "expected": "R/shift",
+          "actual": "X/shift"
+        },
+        {
+          "symbol": "।",
+          "expected": "Z/base",
+          "actual": "G/base"
+        },
+        {
+          "symbol": "অ",
+          "expected": "D/shift",
+          "actual": "F/shift"
+        },
+        {
+          "symbol": "া",
+          "expected": "D/base",
+          "actual": "F/base"
+        },
+        {
+          "symbol": "ি",
+          "expected": "A/base",
+          "actual": "C/base"
+        },
+        {
+          "symbol": "ী",
+          "expected": "Q/base",
+          "actual": "T/base"
+        },
+        {
+          "symbol": "ু",
+          "expected": "E/base",
+          "actual": "V/base"
+        },
+        {
+          "symbol": "ূ",
+          "expected": "S/shift",
+          "actual": "C/shift"
+        },
+        {
+          "symbol": "ৃ",
+          "expected": "E/shift",
+          "actual": "V/shift"
+        },
+        {
+          "symbol": "ে",
+          "expected": "K/base",
+          "actual": "L/base"
+        },
+        {
+          "symbol": "ৈ",
+          "expected": "X/shift",
+          "actual": "R/shift"
+        },
+        {
+          "symbol": "ো",
+          "expected": "X/base",
+          "actual": "R/base"
+        },
+        {
+          "symbol": "ৌ",
+          "expected": "W/shift",
+          "actual": "T/shift"
+        }
+      ],
+      "all_exported_key_mismatch_count": 43,
+      "canonical_equivalences": [],
+      "map_sha256": "c1dbed520482f98c28eb88ae04ad3508017c8c04514b624a71251a30def08f34"
+    },
+    {
+      "target": "Typing Master source",
+      "style": "Goti",
+      "path": "D:\\git repo\\kala-typing-master\\src\\data\\layouts.json",
+      "variable_positions": 52,
+      "mismatches": [],
+      "all_exported_key_mismatch_count": 0,
+      "canonical_equivalences": [
+        {
+          "key": "C",
+          "layer": "shift",
+          "research": "ড়",
+          "runtime": "ড়"
+        },
+        {
+          "key": "Q",
+          "layer": "shift",
+          "research": "ঢ়",
+          "runtime": "ঢ়"
+        },
+        {
+          "key": "N",
+          "layer": "base",
+          "research": "য়",
+          "runtime": "য়"
+        }
+      ],
+      "map_sha256": "c00c4dbef480c1a1096c0f93c906398aa469d57b8ccecb0cc06ef491d9ab0e9b"
+    },
+    {
+      "target": "Kala source",
+      "style": "Jhor",
+      "path": "D:\\git repo\\kala\\kala\\layout\\bn\\KalaJhor.json",
+      "variable_positions": 52,
+      "mismatches": [],
+      "all_exported_key_mismatch_count": 0,
+      "canonical_equivalences": [
+        {
+          "key": "C",
+          "layer": "shift",
+          "research": "ড়",
+          "runtime": "ড়"
+        },
+        {
+          "key": "Q",
+          "layer": "shift",
+          "research": "ঢ়",
+          "runtime": "ঢ়"
+        },
+        {
+          "key": "N",
+          "layer": "base",
+          "research": "য়",
+          "runtime": "য়"
+        }
+      ],
+      "map_sha256": "c00c4dbef480c1a1096c0f93c906398aa469d57b8ccecb0cc06ef491d9ab0e9b"
+    },
+    {
+      "target": "Kala rebuilt Release",
+      "style": "Jhor",
+      "path": "D:\\git repo\\kala\\kala\\artifacts\\shared-layout\\bin\\Release\\net8.0-windows\\layout\\bn\\KalaJhor.json",
+      "variable_positions": 52,
+      "mismatches": [],
+      "all_exported_key_mismatch_count": 0,
+      "canonical_equivalences": [
+        {
+          "key": "C",
+          "layer": "shift",
+          "research": "ড়",
+          "runtime": "ড়"
+        },
+        {
+          "key": "Q",
+          "layer": "shift",
+          "research": "ঢ়",
+          "runtime": "ঢ়"
+        },
+        {
+          "key": "N",
+          "layer": "base",
+          "research": "য়",
+          "runtime": "য়"
+        }
+      ],
+      "map_sha256": "c00c4dbef480c1a1096c0f93c906398aa469d57b8ccecb0cc06ef491d9ab0e9b"
+    },
+    {
+      "target": "Kala installed",
+      "style": "Jhor",
+      "path": "C:\\Users\\doict\\AppData\\Local\\Programs\\Kala\\layout\\bn\\KalaJhor.json",
+      "variable_positions": 52,
+      "mismatches": [
+        {
+          "symbol": "গ",
+          "expected": "G/base",
+          "actual": "P/base"
+        },
+        {
+          "symbol": "ঙ",
+          "expected": "V/shift",
+          "actual": "W/shift"
+        },
+        {
+          "symbol": "চ",
+          "expected": "L/shift",
+          "actual": "B/base"
+        },
+        {
+          "symbol": "ছ",
+          "expected": "B/base",
+          "actual": "J/shift"
+        },
+        {
+          "symbol": "ঝ",
+          "expected": "G/shift",
+          "actual": "B/shift"
+        },
+        {
+          "symbol": "ঞ",
+          "expected": "B/shift",
+          "actual": "X/shift"
+        },
+        {
+          "symbol": "ট",
+          "expected": "T/base",
+          "actual": "Q/base"
+        },
+        {
+          "symbol": "ঠ",
+          "expected": "P/shift",
+          "actual": "E/shift"
+        },
+        {
+          "symbol": "ড়",
+          "expected": "C/shift",
+          "actual": "S/shift"
+        },
+        {
+          "symbol": "ঢ",
+          "expected": "T/shift",
+          "actual": "Q/shift"
+        },
+        {
+          "symbol": "ঢ়",
+          "expected": "Q/shift",
+          "actual": "G/shift"
+        },
+        {
+          "symbol": "ণ",
+          "expected": "U/shift",
+          "actual": "O/shift"
+        },
+        {
+          "symbol": "থ",
+          "expected": "J/shift",
+          "actual": "M/shift"
+        },
+        {
+          "symbol": "দ",
+          "expected": "P/base",
+          "actual": "W/base"
+        },
+        {
+          "symbol": "ধ",
+          "expected": "M/shift",
+          "actual": "U/shift"
+        },
+        {
+          "symbol": "ন",
+          "expected": "C/base",
+          "actual": "S/base"
+        },
+        {
+          "symbol": "ফ",
+          "expected": "O/shift",
+          "actual": "A/shift"
+        },
+        {
+          "symbol": "ব",
+          "expected": "L/base",
+          "actual": "A/base"
+        },
+        {
+          "symbol": "ম",
+          "expected": "O/base",
+          "actual": "X/base"
+        },
+        {
+          "symbol": "য",
+          "expected": "R/base",
+          "actual": "O/base"
+        },
+        {
+          "symbol": "র",
+          "expected": "F/base",
+          "actual": "D/base"
+        },
+        {
+          "symbol": "ল",
+          "expected": "V/base",
+          "actual": "E/base"
+        },
+        {
+          "symbol": "ষ",
+          "expected": "F/shift",
+          "actual": "D/shift"
+        },
+        {
+          "symbol": "হ",
+          "expected": "W/base",
+          "actual": "Z/base"
+        },
+        {
+          "symbol": "্",
+          "expected": "S/base",
+          "actual": "C/base"
+        },
+        {
+          "symbol": "ঃ",
+          "expected": "Z/shift",
+          "actual": "T/shift"
+        },
+        {
+          "symbol": "ঁ",
+          "expected": "A/shift",
+          "actual": "P/shift"
+        },
+        {
+          "symbol": "ৎ",
+          "expected": "R/shift",
+          "actual": "Z/shift"
+        },
+        {
+          "symbol": "।",
+          "expected": "Z/base",
+          "actual": "T/base"
+        },
+        {
+          "symbol": "অ",
+          "expected": "D/shift",
+          "actual": "L/shift"
+        },
+        {
+          "symbol": "া",
+          "expected": "D/base",
+          "actual": "F/base"
+        },
+        {
+          "symbol": "ি",
+          "expected": "A/base",
+          "actual": "L/base"
+        },
+        {
+          "symbol": "ী",
+          "expected": "Q/base",
+          "actual": "G/base"
+        },
+        {
+          "symbol": "ু",
+          "expected": "E/base",
+          "actual": "V/base"
+        },
+        {
+          "symbol": "ূ",
+          "expected": "S/shift",
+          "actual": "F/shift"
+        },
+        {
+          "symbol": "ৃ",
+          "expected": "E/shift",
+          "actual": "C/shift"
+        },
+        {
+          "symbol": "ৈ",
+          "expected": "X/shift",
+          "actual": "R/shift"
+        },
+        {
+          "symbol": "ো",
+          "expected": "X/base",
+          "actual": "R/base"
+        },
+        {
+          "symbol": "ৌ",
+          "expected": "W/shift",
+          "actual": "V/shift"
+        }
+      ],
+      "all_exported_key_mismatch_count": 39,
+      "canonical_equivalences": [
+        {
+          "key": "N",
+          "layer": "base",
+          "research": "য়",
+          "runtime": "য়"
+        }
+      ],
+      "map_sha256": "62686a323b6ba9da6d1e339bb4390243eb7c4d60c8b2bc9a2b1a17aa9b3c6d26"
+    },
+    {
+      "target": "Typing Master source",
+      "style": "Jhor",
+      "path": "D:\\git repo\\kala-typing-master\\src\\data\\layouts.json",
+      "variable_positions": 52,
+      "mismatches": [],
+      "all_exported_key_mismatch_count": 0,
+      "canonical_equivalences": [
+        {
+          "key": "C",
+          "layer": "shift",
+          "research": "ড়",
+          "runtime": "ড়"
+        },
+        {
+          "key": "Q",
+          "layer": "shift",
+          "research": "ঢ়",
+          "runtime": "ঢ়"
+        },
+        {
+          "key": "N",
+          "layer": "base",
+          "research": "য়",
+          "runtime": "য়"
+        }
+      ],
+      "map_sha256": "c00c4dbef480c1a1096c0f93c906398aa469d57b8ccecb0cc06ef491d9ab0e9b"
+    }
+  ],
+  "decoder_parity": {
+    "desktop": {
+      "cases": 13012,
+      "failed": 0,
+      "raw_output_sha256": "83372f686143020b509ccd1c2bab2b21b9743f509b43eceb416a7411198fc63b",
+      "first_failures": []
+    },
+    "typing_master": {
+      "cases": 13012,
+      "failed": 0,
+      "raw_output_sha256": "83372f686143020b509ccd1c2bab2b21b9743f509b43eceb416a7411198fc63b",
+      "first_failures": []
+    },
+    "raw_outputs_identical": true
+  },
+  "rendered_keyboards": [
+    {
+      "style": "goti",
+      "positions": 52,
+      "mismatches": []
+    },
+    {
+      "style": "jhor",
+      "positions": 52,
+      "mismatches": []
+    }
+  ],
+  "certificate_replay": "PASS: hashes, all 45,526 decisions replayed and independently checked",
+  "regressions": {
+    "desktop_targeted": {
+      "passed": 25,
+      "failed": 0
+    },
+    "typing_master": {
+      "passed": 28,
+      "failed": 0
+    }
+  },
+  "installation_state": "Installed Kala retains the historical separate maps; updated source and isolated Release build use shared B01."
+}

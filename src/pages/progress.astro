@@ -14,6 +14,7 @@ import { keyboardHtml } from '../lib/keyboard.ts';
         bn="এখানের সবকিছু শুধু এই ব্রাউজারে রাখা আছে। অন্য ব্রাউজারে নিতে বা নিরাপদে রাখতে ব্যাকআপ ডাউনলোড করুন — সাইট ডেটা মুছলে এগুলো মুছে যাবে।"
       />
     </p>
+    <p class="muted small" id="map-update" hidden><T en="The shared Kala Layout starts a fresh key-learning record. Your earlier map progress is retained in downloaded backups, and earlier sessions stay in your history." bn="যৌথ কালা লেআউটে কি শেখার অগ্রগতি নতুন করে শুরু হয়। আগের বিন্যাসের অগ্রগতি ডাউনলোড করা ব্যাকআপে থাকে এবং আগের অনুশীলন ইতিহাসে থাকে।" /></p>
   </section>
 
   <section class="wrap">
@@ -123,12 +124,15 @@ import { keyboardHtml } from '../lib/keyboard.ts';
       const layout = layoutById(s.layout);
       const step = journey(s.layout).find((x) => x.id === s.step);
       const when = new Date(s.at).toLocaleString(document.documentElement.lang === 'bn' ? 'bn-BD' : undefined, { dateStyle: 'medium', timeStyle: 'short' });
-      return `<li><span><b>${escapeHtml(t(step?.title ?? { en: 'Reading', bn: 'পড়া' }))}</b> <span class="muted">· ${escapeHtml(t(layout?.name))}</span><br><small class="muted">${escapeHtml(when)}</small></span>
+      const previousMap = s.mappingHash && s.mappingHash !== layout?.sourceSha256
+        ? ` · ${escapeHtml(t({ en: 'previous map', bn: 'আগের বিন্যাস' }))}` : '';
+      return `<li><span><b>${escapeHtml(t(step?.title ?? { en: 'Reading', bn: 'পড়া' }))}</b> <span class="muted">· ${escapeHtml(t(layout?.name))}${previousMap}</span><br><small class="muted">${escapeHtml(when)}</small></span>
         <span class="num">${s.accuracy}%${s.qualified && s.gpm ? ` · ${Math.round(s.gpm)}/min` : ''}</span></li>`;
     }).join('');
   }
 
   function all() {
+    $('map-update').hidden = Object.keys(p.layoutHistory ?? {}).length === 0;
     tiles();
     keyboard();
     sessions();

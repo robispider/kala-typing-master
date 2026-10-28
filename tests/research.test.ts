@@ -9,7 +9,7 @@ import { recipeFor, press } from '../src/lib/recipe.ts';
 import { vkOfCode } from '../src/lib/keys.ts';
 import {
   aggregate, candidateLayout, candidates, DURATION_MS, FORMS, hashLayout, plan, reportText, Trial,
-  type ResearchReport, type TrialOptions,
+  type ResearchReport, type TrialOptions, type TrialResult,
 } from '../src/lib/research.ts';
 
 test('frozen maps have exactly the intended two-slot difference; all fixed keys/rules stay inherited', async () => {
@@ -75,10 +75,16 @@ test('the remapped Jhor decoder preserves original recorded vowel and Backspace 
   }
 });
 
-test('ABBA and BAAB give each candidate both text forms and reverse within style/help sessions', () => {
-  assert.deepEqual(plan(1).map((b) => b.candidate), ['B01', 'B02', 'B02', 'B01']);
-  assert.deepEqual(plan(2).map((b) => b.candidate), ['B02', 'B01', 'B01', 'B02']);
-  for (const n of [1, 2]) for (const c of ['B01', 'B02']) assert.deepEqual(plan(n).filter((b) => b.candidate === c).map((b) => b.form).sort(), [0, 1]);
+test('style crossover keeps B01 fixed, gives each style both forms and reverses between sessions', () => {
+  assert.deepEqual(plan(1).map((b) => b.style), ['A', 'D', 'D', 'A']);
+  assert.deepEqual(plan(2).map((b) => b.style), ['D', 'A', 'A', 'D']);
+  for (const n of [1, 2]) for (const style of ['A', 'D']) {
+    assert.ok(plan(n).every((b) => b.candidate === 'B01'));
+    assert.deepEqual(plan(n).filter((b) => b.style === style).map((b) => b.form).sort(), [0, 1]);
+  }
+  const goti = candidateLayout('B01', 'A'), jhor = candidateLayout('B01', 'D');
+  assert.deepEqual(goti.normal, jhor.normal); assert.deepEqual(goti.shift, jhor.shift);
+  assert.notEqual(goti.contextVowels, jhor.contextVowels);
 });
 
 const options: TrialOptions = {
@@ -155,12 +161,12 @@ test('vowel timing does not bridge a pause and raw composition/Backspace replay 
 test('copy report preserves exact maps, partial status, raw denominators and prompt responses', () => {
   const f = fixture(); f.at(1000); f.key(74); f.at(2000); const result = f.trial.finish('stopped');
   const report: ResearchReport = {
-    schema: 'kala.shared-layout-pilot/1', protocol: 'test', bank: 'test',
-    session: { id: 'test', number: 1, startedUtc: '', appVersion: 'test', style: 'A', assistance: 'guided', experience: 'new',
-      keyboard: 'external', fingering: 'usual', priorReports: 0, order: ['B01', 'B02', 'B02', 'B01'],
+    schema: 'kala.b01-style-pilot/2', protocol: 'test', bank: 'test',
+    session: { id: 'test', number: 1, startedUtc: '', appVersion: 'test', candidate: 'B01', previousStyleExperience: 'neither', assistance: 'guided', experience: 'new',
+      keyboard: 'external', fingering: 'usual', priorReports: 0, order: ['A', 'D', 'D', 'A'],
       completion: 'stopped', storageAvailable: false, exposureBefore: {} },
-    maps: candidates.map((c) => ({ ...c, runtimeHash: 'test', ruleTemplateHash: 'test' })),
-    limitations: ['test'], trials: [result], blocks: [],
+    maps: (['A', 'D'] as const).map((style) => ({ ...candidates[0], style, runtimeHash: 'test', ruleTemplateHash: 'test' })),
+    limitations: ['test'], trials: [result], blocks: [], preference: 'unsure',
   };
   const text = reportText(report);
   const parsed = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
@@ -168,12 +174,14 @@ test('copy report preserves exact maps, partial status, raw denominators and pro
   assert.equal(parsed.trials[0].capture.prompts[0].typed, 'ক');
   assert.equal(parsed.summaries[0].attemptedUnits, 1); assert.equal(parsed.summaries[0].correctGpm, null);
   assert.equal(parsed.summaries[2].accuracy, null);
+  assert.equal(parsed.session.candidate, 'B01'); assert.equal(parsed.preference, 'unsure');
+  assert.equal(parsed.summaries[0].style, 'A'); assert.equal(parsed.summaries[2].style, 'D');
 });
 
 test('a complete eight-role run replays, keeps both text types separate and qualifies sufficient samples', () => {
-  const results = [];
+  const results: TrialResult[] = [];
   for (const block of plan(1)) for (const role of ['ordinary', 'vowel-diagnostic'] as const) {
-    const f = fixture({ candidate: block.candidate, style: 'D', block: block.block, form: block.form, role });
+    const f = fixture({ candidate: 'B01', style: block.style, block: block.block, form: block.form, role });
     const fresh = FixedComposer.create(f.trial.layout, charTypes);
     let time = 0;
     const words = f.trial.target.split(' ');
@@ -188,11 +196,12 @@ test('a complete eight-role run replays, keeps both text types separate and qual
     results.push(f.trial.done!);
   }
   assert.equal(results.length, 8);
-  for (const candidate of ['B01', 'B02'] as const) for (const role of ['ordinary', 'vowel-diagnostic'] as const) {
-    const group = aggregate(results, candidate, role);
+  for (const style of ['A', 'D'] as const) for (const role of ['ordinary', 'vowel-diagnostic'] as const) {
+    const group = aggregate(results, 'B01', role, style);
     assert.equal(group.completedTrials, 2); assert.equal(group.activeSeconds, 120);
     assert.equal(group.accuracy, 100); assert.ok(group.correctGpm! > 0); assert.equal(group.integrityOK, true);
   }
+  assert.throws(() => aggregate(results, 'B01', 'ordinary'), /Do not pool/);
   const broken = structuredClone(results[0]); broken.capture.integrity.dropped_events = 1;
   const invalid = aggregate([broken], 'B01', 'ordinary');
   assert.equal(invalid.integrityOK, false); assert.equal(invalid.correctGpm, null); assert.equal(invalid.accuracy, null);

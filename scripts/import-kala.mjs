@@ -13,7 +13,7 @@ import { importHands } from './import-hands.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const kala = resolve(process.argv[2] ?? process.env.KALA_SRC ?? join(root, '..', 'kala'));
 const app = join(kala, 'kala');
-const literature = join(app, 'learning-packs', 'kala.bn-literature', '1.1.0');
+const literature = join(app, 'learning-packs', 'kala.bn-literature', '1.1.1');
 const english = join(app, 'learning-packs', 'kala.en-touch', '1.0.0');
 
 const srcData = join(root, 'src', 'data');
@@ -52,6 +52,68 @@ const nativeLayouts = [
   { id: 'unijoy', file: 'UniJoy.json', path: 'UniJoy.json' },
 ];
 
+// Shared native assets carry research identity and typing rules. Web instructions
+// use their actual key positions rather than the old app-only descriptive fields.
+function sharedInstructions(layout) {
+  if (layout.about?.publication !== 'kala-shared-publication-v1') return {};
+  const context = layout.about.style.typingRule.id === 'context-vowel';
+  const keyFor = (symbol) => {
+    for (const [layer, values] of Object.entries(layout.layers)) {
+      for (const [vk, value] of Object.entries(values)) {
+        if (value === symbol && Number(vk) >= 65 && Number(vk) <= 90)
+          return `${layer === 'shift' ? 'Shift+' : ''}${String.fromCharCode(Number(vk))}`;
+      }
+    }
+    throw new Error(`Shared layout has no key for ${symbol}`);
+  };
+  const hasant = keyFor('্'), inherent = keyFor('অ');
+  const examples = [
+    ['আমি', context ? 'া ম ি' : '্ া ম ি'],
+    ['কী', 'ক ী'], ['বই', context ? 'ব ি ি' : 'ব ্ ি'],
+    ['এবং', context ? 'ে ব ং' : '্ ে ব ং'],
+    ['তিনিই', context ? 'ত ি ন ি ি ি' : 'ত ি ন ি ্ ি'],
+    ['আকাশ', context ? 'া ক া শ' : '্ া ক া শ'],
+  ].map(([text, presses]) => ({ text, presses, keys: presses.split(' ').map(keyFor).join(' ') }));
+  return {
+    name: { en: layout.name, bn: context ? 'Kala ঝড়' : 'Kala গতি' },
+    tagline: context
+      ? { en: 'Automatic vowels: Kala chooses the sign or full vowel for you.', bn: 'স্বয়ংক্রিয় স্বরবর্ণ: Kala নিজেই কার বা পূর্ণ স্বরবর্ণ বেছে নেয়।' }
+      : { en: 'Familiar vowel entry: press hasant, then the vowel sign for a full vowel.', bn: 'পরিচিত নিয়মে স্বরবর্ণ: পূর্ণ স্বরবর্ণ লিখতে হসন্তের পরে কার চাপুন।' },
+    style: {
+      code: context ? 'D' : 'A', rule: context ? 'context-vowel' : 'hasant-sign',
+      name: context ? { en: 'context vowels', bn: 'প্রসঙ্গ-নির্ভর স্বরবর্ণ' } : { en: 'hasant + sign vowels', bn: 'হসন্ত ও কার দিয়ে স্বরবর্ণ' },
+    },
+    howToType: {
+      en: context ? [
+        'Goti and Jhor use the same keys and Shift layer; only vowel entry changes.',
+        'After a consonant, a vowel key gives its sign: ক + ি = কি.',
+        'At word start or after a non-consonant, it gives the full vowel: ি = ই; া + ি = আই.',
+        'Press the same vowel key twice after a consonant for the full vowel: ব + ি + ি = বই.',
+        'Three presses give sign + vowel: ত ি ন ি ি ি = তিনিই.',
+        `অ is ${inherent}; hasant (${hasant}) joins consonants: ক + ্ + ষ = ক্ষ.`,
+      ] : [
+        'Goti and Jhor use the same keys and Shift layer; only vowel entry changes.',
+        'Every vowel sign has its own key: ক + ি = কি.',
+        `For a full vowel, press hasant (${hasant}) then its sign: ্ + ি = ই; ্ + া = আ.`,
+        `অ is ${inherent}. Hasant also joins consonants: ক + ্ + ষ = ক্ষ.`,
+      ],
+      bn: context ? [
+        'গতি ও ঝড়ের কি এবং Shift স্তর একই; শুধু স্বরবর্ণ লেখার নিয়ম বদলায়।',
+        'ব্যঞ্জনের পরে স্বর-কী কার দেয়: ক + ি = কি।',
+        'শব্দের শুরুতে বা ব্যঞ্জন ছাড়া অন্য বর্ণের পরে পূর্ণ স্বরবর্ণ দেয়: ি = ই; া + ি = আই।',
+        'ব্যঞ্জনের পরে একই স্বর-কী দুবার চাপলে পূর্ণ স্বরবর্ণ: ব + ি + ি = বই।',
+        'তিনবার চাপলে কার ও স্বরবর্ণ: ত ি ন ি ি ি = তিনিই।',
+        `অ পাওয়া যায় ${inherent} চাপলে; হসন্ত (${hasant}) দিয়ে যুক্তবর্ণ: ক + ্ + ষ = ক্ষ।`,
+      ] : [
+        'গতি ও ঝড়ের কি এবং Shift স্তর একই; শুধু স্বরবর্ণ লেখার নিয়ম বদলায়।',
+        'প্রতিটি কারের নিজস্ব কী আছে: ক + ি = কি।',
+        `পূর্ণ স্বরবর্ণ লিখতে আগে হসন্ত (${hasant}), তারপর কার চাপুন: ্ + ি = ই; ্ + া = আ।`,
+        `অ পাওয়া যায় ${inherent} চাপলে। হসন্ত দিয়ে যুক্তবর্ণও হয়: ক + ্ + ষ = ক্ষ।`,
+      ], examples,
+    },
+  };
+}
+
 function nativeLayout({ id, file }) {
   const path = join(app, 'layout', 'bn', file);
   const layout = read(path);
@@ -72,6 +134,9 @@ function nativeLayout({ id, file }) {
     sequences: layout.combinations?.sequences ?? {},
     rules: layout.rules ?? [],
     sourceSha256: sha256(path),
+    publication: about.publication ?? null,
+    arrangementId: about.arrangementId ?? null,
+    ...sharedInstructions(layout),
   };
 }
 
@@ -117,10 +182,13 @@ const layouts = [...nativeLayouts.map(nativeLayout), qwertyLayout()];
 const paths = {};
 for (const { id, path } of nativeLayouts) {
   const tp = read(join(literature, 'teaching-paths', path));
+  if (tp.layoutHash !== layouts.find((layout) => layout.id === id).sourceSha256)
+    throw new Error(`${id}: teaching path does not match its layout`);
   paths[id] = {
     id: tp.id,
     version: tp.version,
     review: tp.review,
+    layoutHash: tp.layoutHash,
     groups: tp.groups.map((g) => g.units),
     modules: tp.modules.map((m) => ({
       id: m.id,
@@ -262,10 +330,14 @@ for (const [key, authorWorks] of [...byAuthor].sort((a, b) => excerptCount(b[1])
 
 // ---- Typing skill check: Kala's current prompt bank, reduced to the forms validated for these layouts.
 // bank_sha256 in a research package names the authoritative bank file, so its hash is kept here.
-const checkBankFile = join(app, 'learning-packs', 'kala.bn-typing-check', '1.4.0', 'prompts.json');
+const checkBankFile = join(app, 'learning-packs', 'kala.bn-typing-check', '1.4.1', 'prompts.json');
 const checkBank = read(checkBankFile);
 const checkHashes = new Set(layouts.map((l) => l.sourceSha256));
 const checkVariants = checkBank.variants.filter((v) => checkHashes.has(v.layout_hash));
+for (const layout of layouts.filter((layout) => layout.language === 'bn')) {
+  if (checkVariants.filter((variant) => variant.layout_hash === layout.sourceSha256).length !== 8)
+    throw new Error(`${layout.id}: expected eight validated typing-check forms`);
+}
 const checkIds = new Set(checkVariants.flatMap((v) => Object.values(v.stages).flat()));
 sizes['bn/check.json'] = write(join(pubData, 'bn', 'check.json'), {
   schema: checkBank.schema,

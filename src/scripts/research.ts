@@ -8,22 +8,22 @@ import { recipeFor } from '../lib/recipe.ts';
 import { graphemes } from '../lib/scoring.ts';
 import {
   aggregate, BANK, candidateLayout, candidates, FORMS, hashLayout, LIMITATIONS, plan, PROTOCOL,
-  reportText, Trial, type Assistance, type ResearchReport, type Role, type Style, type TrialResult,
+  reportText, Trial, type Assistance, type ResearchReport, type Role, type TrialResult,
 } from '../lib/research.ts';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const say = (id: string, en: string, bn: string) => { $(id).innerHTML = both({ en, bn }); };
 const select = (id: string) => $<HTMLSelectElement>(id).value;
 const field = $('rs-input');
-const HISTORY_KEY = 'kala-shared-research:v1';
-const LAST_REPORT_KEY = 'kala-shared-research:last-report:v1';
+const HISTORY_KEY = 'kala-b01-style-research:v2';
+const LAST_REPORT_KEY = 'kala-b01-style-research:last-report:v2';
 interface History { counts: Record<string, number>; exposures: Record<string, number>; reports: number }
 let storageAvailable = true;
 let history: History = { counts: {}, exposures: {}, reports: 0 };
 try {
   const saved = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? 'null');
   if (saved && typeof saved === 'object' && saved.counts && saved.exposures && Number.isSafeInteger(saved.reports)) history = saved;
-  const previous = localStorage.getItem(LAST_REPORT_KEY);
+  const previous = localStorage.getItem(LAST_REPORT_KEY) ?? localStorage.getItem('kala-shared-research:last-report:v1');
   if (previous) { $('rs-previous').hidden = false; $<HTMLTextAreaElement>('rs-previous-text').value = previous; }
 } catch { storageAvailable = false; }
 const storeHistory = () => {
@@ -53,40 +53,40 @@ async function prepare(event: SubmitEvent) {
   event.preventDefault();
   if (busy) return;
   busy = true; $<HTMLButtonElement>('rs-prepare').disabled = true;
-  say('rs-setup-status', 'Checking both maps and all test words…', 'দুটি বিন্যাস ও পরীক্ষার শব্দ যাচাই হচ্ছে…');
+  say('rs-setup-status', 'Checking B01 with both typing styles…', 'B01-তে দুই টাইপিং শৈলী যাচাই হচ্ছে…');
   try {
-    const style = select('rs-style') as Style;
     const assistance = select('rs-assistance') as Assistance;
     // Give the busy message a paint before the bounded, decoder-replayed recipe validation.
     await new Promise((resolve) => requestAnimationFrame(resolve));
-    for (const candidate of ['B01', 'B02'] as const) {
-      const layout = candidateLayout(candidate, style);
-      hashes[candidate] = await hashLayout(layout);
+    for (const style of ['A', 'D'] as const) {
+      const layout = candidateLayout('B01', style);
+      hashes[style] = await hashLayout(layout);
       const fresh = FixedComposer.create(layout, charTypes);
       for (const role of Object.values(FORMS)) {
         for (const text of role) for (const word of text.split(' ')) {
-          if (!recipeFor(fresh, word)) throw new Error(`No valid typing recipe: ${candidate} ${word}`);
+          if (!recipeFor(fresh, word)) throw new Error(`No valid typing recipe: B01/${style} ${word}`);
         }
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
     }
-    const group = `${style}:${assistance}`;
+    const group = assistance;
     const number = count(history.counts[group]) + 1;
     sequence = plan(number);
     report = {
-      schema: 'kala.shared-layout-pilot/1', protocol: PROTOCOL, bank: BANK,
+      schema: 'kala.b01-style-pilot/2', protocol: PROTOCOL, bank: BANK,
       session: {
         id: crypto.randomUUID(), number, startedUtc: new Date().toISOString(), appVersion: pkg.version,
-        style, assistance, experience: select('rs-experience'), keyboard: select('rs-keyboard') as ResearchReport['session']['keyboard'],
-        fingering: select('rs-fingering'), priorReports: count(history.reports), order: sequence.map((b) => b.candidate),
+        candidate: 'B01', assistance, previousStyleExperience: select('rs-style-experience'), experience: select('rs-experience'), keyboard: select('rs-keyboard') as ResearchReport['session']['keyboard'],
+        fingering: select('rs-fingering'), priorReports: count(history.reports), order: sequence.map((b) => b.style),
         completion: 'stopped', storageAvailable, exposureBefore: { ...history.exposures },
       },
-      maps: candidates.map((c) => ({
-        label: c.label, id: c.id, sourceSha256: c.sourceSha256, physicalMapSha256: c.physicalMapSha256,
-        runtimeHash: hashes[c.label], ruleTemplateHash: layoutById(style === 'A' ? 'kala-goti' : 'kala-jhor')!.sourceSha256,
-      })),
+      maps: (['A', 'D'] as const).map((style) => {
+        const c = candidates.find((c) => c.label === 'B01')!;
+        return { label: c.label, id: c.id, style, sourceSha256: c.sourceSha256, physicalMapSha256: c.physicalMapSha256,
+          runtimeHash: hashes[style], ruleTemplateHash: layoutById(style === 'A' ? 'kala-goti' : 'kala-jhor')!.sourceSha256 };
+      }),
       limitations: [...LIMITATIONS, ...(assistance === 'guided' ? ['next-key-guidance-during-measurement'] : [])],
-      trials: [], blocks: [],
+      trials: [], blocks: [], preference: 'unsure',
     };
     history.counts[group] = number;
     storeHistory();
@@ -112,8 +112,8 @@ function startTrial(role: Role) {
   const block = sequence[blockIndex];
   const exposure = exposureKey(role, block.form);
   trial = new Trial({
-    candidate: block.candidate, style: report.session.style, assistance: report.session.assistance,
-    role, block: block.block, form: block.form, sessionId: report.session.id, runtimeHash: hashes[block.candidate],
+    candidate: 'B01', style: block.style, assistance: report.session.assistance,
+    role, block: block.block, form: block.form, sessionId: report.session.id, runtimeHash: hashes[block.style],
     keyboard: report.session.keyboard, previousExposures: count(history.exposures[exposure]), appVersion: pkg.version,
   });
   // Count exposure when text is shown, including abandoned and practice displays.
@@ -124,8 +124,15 @@ function startTrial(role: Role) {
   const useGuidance = role === 'practice' || report.session.assistance === 'guided';
   $('rs-kb').hidden = !useGuidance;
   $('rs-measure').hidden = role !== 'practice';
-  say('rs-heading', `Block ${blockIndex + 1} of 4 · ${block.candidate} · ${report.session.style === 'A' ? 'Goti' : 'Jhor'}`,
-    `পর্ব ${blockIndex + 1}/4 · ${block.candidate} · ${report.session.style === 'A' ? 'গতি' : 'ঝড়'}`);
+  say('rs-heading', `Block ${blockIndex + 1} of 4 · B01 · ${block.style === 'A' ? 'Goti' : 'Jhor'}`,
+    `পর্ব ${blockIndex + 1}/4 · B01 · ${block.style === 'A' ? 'গতি' : 'ঝড়'}`);
+  $('rs-rule').hidden = role !== 'practice';
+  const rule = block.style === 'A'
+    ? { en: 'Goti: for a full vowel, press hasant (S) then its vowel key. The same positions are used in every block.', bn: 'গতি: পূর্ণ স্বরবর্ণের জন্য আগে হসন্ত (S), তারপর স্বর-কী চাপুন। সব পর্বে কি-এর অবস্থান একই।' }
+    : { en: 'Jhor: the vowel key gives a full vowel at word start and a sign after a consonant. Press it twice after a consonant for a full vowel.', bn: 'ঝড়: শব্দের শুরুতে স্বর-কী পূর্ণ স্বরবর্ণ দেয়; ব্যঞ্জনের পরে কার। ব্যঞ্জনের পরে পূর্ণ স্বরবর্ণ চাইলে স্বর-কী দুবার চাপুন।' };
+  const example = recipeFor(FixedComposer.create(trial.layout, charTypes), 'বই')!;
+  const keys = example.map((a) => `${a.shift ? 'Shift+' : ''}${qwertyLabel(a.vk)}`).join(' → ');
+  $('rs-rule').innerHTML = `${both(rule)} <strong>বই: ${escapeHtml(keys)}</strong>`;
   say('rs-role', role === 'practice' ? 'Practice · not measured' : role === 'ordinary' ? 'Ordinary text · 1 minute' : 'Vowel diagnostic · 1 minute',
     role === 'practice' ? 'অনুশীলন · মাপের বাইরে' : role === 'ordinary' ? 'সাধারণ লেখা · ১ মিনিট' : 'স্বরচিহ্ন যাচাই · ১ মিনিট');
   renderTyping(); field.focus(); tick();
@@ -166,12 +173,12 @@ function endRole(result: TrialResult) {
   $<HTMLSelectElement>('rs-comfort').value = ''; $<HTMLTextAreaElement>('rs-notes').value = '';
   if (between === 'vowels') {
     say('rs-between-title', 'Ordinary text finished. Take a break.', 'সাধারণ লেখার মাপ শেষ। একটু বিরতি নিন।');
-    say('rs-between-text', 'Next is a separate minute with words using the two swapped vowel keys. These scores will not be mixed with ordinary text.',
-      'এবার অদলবদল করা স্বরচিহ্ন আছে এমন শব্দে আলাদা এক মিনিট। এর ফল সাধারণ লেখার সঙ্গে মেশানো হবে না।');
+    say('rs-between-text', 'Next is a separate minute of vowel and context exercises: full vowels, signs and repeated vowel keys. These scores stay separate from ordinary text.',
+      'এবার পূর্ণ স্বরবর্ণ, কার ও একই স্বর-কী বারবার চাপার নিয়মে আলাদা এক মিনিট। এর ফল সাধারণ লেখার সঙ্গে মেশানো হবে না।');
   } else {
     say('rs-between-title', `Block ${blockIndex + 1} finished.`, `পর্ব ${blockIndex + 1} শেষ।`);
-    say('rs-between-text', blockIndex === 3 ? 'Add a comfort rating, then finish and copy your report.' : 'Add a comfort rating. The next candidate starts with optional guided practice.',
-      blockIndex === 3 ? 'স্বাচ্ছন্দ্যের মতামত দিয়ে শেষ করুন, তারপর প্রতিবেদন কপি করুন।' : 'স্বাচ্ছন্দ্যের মতামত দিন। পরের বিন্যাসে আগে সাহায্য নিয়ে অনুশীলন করতে পারবেন।');
+    say('rs-between-text', blockIndex === 3 ? 'Add a comfort rating, then finish and copy your report.' : 'Add a comfort rating. The next block starts with guided practice for its typing style. B01 positions stay fixed.',
+      blockIndex === 3 ? 'স্বাচ্ছন্দ্যের মতামত দিয়ে শেষ করুন, তারপর প্রতিবেদন কপি করুন।' : 'স্বাচ্ছন্দ্যের মতামত দিন। পরের পর্বে শৈলীর নিয়মে অনুশীলন করতে পারবেন। B01-এর অবস্থান একই থাকবে।');
   }
   say('rs-status', 'Not timed. Continue when ready.', 'এখন সময় মাপা হচ্ছে না। প্রস্তুত হলে চালিয়ে যান।');
   $<HTMLButtonElement>('rs-next').focus();
@@ -181,7 +188,7 @@ function saveRating() {
   if (!report || between !== 'block' || noteSaved) return;
   const value = select('rs-comfort');
   const comfort = value ? Number(value) : null;
-  report.blocks.push({ block: blockIndex, candidate: sequence[blockIndex].candidate, comfort, notes: $<HTMLTextAreaElement>('rs-notes').value });
+  report.blocks.push({ block: blockIndex, candidate: 'B01', style: sequence[blockIndex].style, comfort, notes: $<HTMLTextAreaElement>('rs-notes').value });
   for (const r of report.trials.filter((r) => r.block === blockIndex && r.role !== 'practice')) r.comfort = comfort;
   noteSaved = true;
 }
@@ -219,12 +226,12 @@ function finish(completion: 'completed' | 'stopped') {
   $('rs-work').hidden = true; $('rs-result').hidden = false;
   $<HTMLTextAreaElement>('rs-report').value = text;
   const fmt = (n: number | null) => n === null ? '—' : n.toFixed(1);
-  const rows = (['B01', 'B02'] as const).flatMap((candidate) => (['ordinary', 'vowel-diagnostic'] as const).map((role) => {
-    const a = aggregate(report!.trials, candidate, role);
+  const rows = (['A', 'D'] as const).flatMap((style) => (['ordinary', 'vowel-diagnostic'] as const).map((role) => {
+    const a = aggregate(report!.trials, 'B01', role, style);
     const name: Text = role === 'ordinary' ? { en: 'Ordinary', bn: 'সাধারণ' } : { en: 'Vowel diagnostic', bn: 'স্বরচিহ্ন যাচাই' };
-    return `<tr><td>${candidate}</td><td>${both(name)}</td><td>${fmt(a.activeSeconds)}</td><td>${fmt(a.accuracy)}</td><td>${fmt(a.correctGpm)}</td><td>${a.backspaces}</td></tr>`;
+    return `<tr><td>${style === 'A' ? 'Goti' : 'Jhor'}</td><td>${both(name)}</td><td>${fmt(a.activeSeconds)}</td><td>${fmt(a.accuracy)}</td><td>${fmt(a.correctGpm)}</td><td>${a.backspaces}</td></tr>`;
   }));
-  const headers: Text[] = [{ en: 'Layout', bn: 'বিন্যাস' }, { en: 'Text', bn: 'লেখা' }, { en: 'Active seconds', bn: 'সক্রিয় সেকেন্ড' },
+  const headers: Text[] = [{ en: 'B01 style', bn: 'B01-এর শৈলী' }, { en: 'Text', bn: 'লেখা' }, { en: 'Active seconds', bn: 'সক্রিয় সেকেন্ড' },
     { en: 'Accuracy %', bn: 'নির্ভুলতা %' }, { en: 'Correct GPM', bn: 'সঠিক একক/মিনিট' }, { en: 'Backspaces', bn: 'Backspace' }];
   $('rs-summary').innerHTML = `<p>${both(completion === 'completed' ? { en: 'All four blocks complete.', bn: 'চারটি পর্ব শেষ।' } : { en: 'Stopped early. Missing blocks are not zero scores.', bn: 'আগে থেমেছেন। বাকি পর্বের মাপ শূন্য নয়, অনুপস্থিত।' })}</p>
     <table><thead><tr>${headers.map((h) => `<th>${both(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>
@@ -291,6 +298,14 @@ $('rs-copy').addEventListener('click', async () => {
 $('rs-download').addEventListener('click', () => {
   if (!report) return;
   const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
-  const link = document.createElement('a'); link.href = url; link.download = `kala-shared-pilot-${report.session.id}.json`; link.click();
+  const link = document.createElement('a'); link.href = url; link.download = `kala-b01-style-pilot-${report.session.id}.json`; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+$('rs-preference').addEventListener('change', () => {
+  if (!report || !closed) return;
+  report.preference = select('rs-preference') as ResearchReport['preference'];
+  const text = reportText(report);
+  $<HTMLTextAreaElement>('rs-report').value = text;
+  try { localStorage.setItem(LAST_REPORT_KEY, text); } catch { report.session.storageAvailable = false; }
+  say('rs-copy-status', 'Preference updated. Copy the report again to include it.', 'পছন্দ যোগ হয়েছে। পছন্দসহ প্রতিবেদন আবার কপি করুন।');
 });

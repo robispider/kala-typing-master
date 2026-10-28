@@ -18,6 +18,8 @@ export interface Layout extends FixedLayout {
   style: { code: string; name: Text; rule: string } | null;
   howToType: { en: string[]; bn: string[]; examples?: { text: string; keys: string; presses: string }[] } | null;
   sourceSha256: string;
+  publication?: string | null;
+  arrangementId?: string | null;
 }
 
 export interface Module {

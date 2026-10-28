@@ -81,7 +81,7 @@ test('recipes replay to the target and match authored examples', () => {
   }
   const goti = layout('kala-goti');
   const steps = recipeFor(FixedComposer.create(goti, types), 'আমি')!;
-  assert.deepEqual(steps.map((s) => String.fromCharCode(s.vk)), ['K', 'F', 'X', 'C']);
+  assert.deepEqual(steps.map((s) => String.fromCharCode(s.vk)), ['S', 'D', 'O', 'A']);
 });
 
 test('scoring: worked checks from 05-ASSESSMENT', () => {
@@ -125,7 +125,7 @@ test('recipes cover the practice vocabulary and recover from mistakes', () => {
   // A wrong letter is fixed with Backspace first.
   const goti = FixedComposer.create(layout('kala-goti'), types);
   const composer = goti.clone();
-  const text = apply('', composer.translate(65, false)); // ব instead of ম
+  const text = apply('', composer.translate(76, false)); // ব instead of ম
   const steps = solve(composer, text, 'মা')!;
   assert.equal(steps[0].vk, 8);
   assert.equal(steps.at(-1)!.text, 'মা');

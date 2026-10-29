@@ -13,7 +13,7 @@ import { importHands } from './import-hands.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const kala = resolve(process.argv[2] ?? process.env.KALA_SRC ?? join(root, '..', 'kala'));
 const app = join(kala, 'kala');
-const literature = join(app, 'learning-packs', 'kala.bn-literature', '1.1.1');
+const literature = join(app, 'learning-packs', 'kala.bn-literature', '1.1.2');
 const english = join(app, 'learning-packs', 'kala.en-touch', '1.0.0');
 
 const srcData = join(root, 'src', 'data');
@@ -54,8 +54,8 @@ const nativeLayouts = [
 
 // Shared native assets carry research identity and typing rules. Web instructions
 // use their actual key positions rather than the old app-only descriptive fields.
-function sharedInstructions(layout) {
-  if (layout.about?.publication !== 'kala-shared-publication-v1') return {};
+function nativeInstructions(layout) {
+  if (!['kala-shared-publication-v1', 'kala-separate-publication-v1'].includes(layout.about?.publication)) return {};
   const context = layout.about.style.typingRule.id === 'context-vowel';
   const keyFor = (symbol) => {
     for (const [layer, values] of Object.entries(layout.layers)) {
@@ -75,7 +75,7 @@ function sharedInstructions(layout) {
     ['আকাশ', context ? 'া ক া শ' : '্ া ক া শ'],
   ].map(([text, presses]) => ({ text, presses, keys: presses.split(' ').map(keyFor).join(' ') }));
   return {
-    name: { en: layout.name, bn: context ? 'Kala ঝড়' : 'Kala গতি' },
+    name: { en: layout.name, bn: context ? 'কালা ঝড়' : 'কালা গতি' },
     tagline: context
       ? { en: 'Automatic vowels: Kala chooses the sign or full vowel for you.', bn: 'স্বয়ংক্রিয় স্বরবর্ণ: Kala নিজেই কার বা পূর্ণ স্বরবর্ণ বেছে নেয়।' }
       : { en: 'Familiar vowel entry: press hasant, then the vowel sign for a full vowel.', bn: 'পরিচিত নিয়মে স্বরবর্ণ: পূর্ণ স্বরবর্ণ লিখতে হসন্তের পরে কার চাপুন।' },
@@ -85,27 +85,27 @@ function sharedInstructions(layout) {
     },
     howToType: {
       en: context ? [
-        'Goti and Jhor use the same keys and Shift layer; only vowel entry changes.',
+        'Goti and Jhor have distinct key maps and native vowel-entry rules.',
         'After a consonant, a vowel key gives its sign: ক + ি = কি.',
         'At word start or after a non-consonant, it gives the full vowel: ি = ই; া + ি = আই.',
         'Press the same vowel key twice after a consonant for the full vowel: ব + ি + ি = বই.',
         'Three presses give sign + vowel: ত ি ন ি ি ি = তিনিই.',
         `অ is ${inherent}; hasant (${hasant}) joins consonants: ক + ্ + ষ = ক্ষ.`,
       ] : [
-        'Goti and Jhor use the same keys and Shift layer; only vowel entry changes.',
+        'Goti and Jhor have distinct key maps and native vowel-entry rules.',
         'Every vowel sign has its own key: ক + ি = কি.',
         `For a full vowel, press hasant (${hasant}) then its sign: ্ + ি = ই; ্ + া = আ.`,
         `অ is ${inherent}. Hasant also joins consonants: ক + ্ + ষ = ক্ষ.`,
       ],
       bn: context ? [
-        'গতি ও ঝড়ের কি এবং Shift স্তর একই; শুধু স্বরবর্ণ লেখার নিয়ম বদলায়।',
+        'গতি ও ঝড়ের অক্ষরের অবস্থান ও স্বরবর্ণ লেখার নিয়ম আলাদা।',
         'ব্যঞ্জনের পরে স্বর-কী কার দেয়: ক + ি = কি।',
         'শব্দের শুরুতে বা ব্যঞ্জন ছাড়া অন্য বর্ণের পরে পূর্ণ স্বরবর্ণ দেয়: ি = ই; া + ি = আই।',
         'ব্যঞ্জনের পরে একই স্বর-কী দুবার চাপলে পূর্ণ স্বরবর্ণ: ব + ি + ি = বই।',
         'তিনবার চাপলে কার ও স্বরবর্ণ: ত ি ন ি ি ি = তিনিই।',
         `অ পাওয়া যায় ${inherent} চাপলে; হসন্ত (${hasant}) দিয়ে যুক্তবর্ণ: ক + ্ + ষ = ক্ষ।`,
       ] : [
-        'গতি ও ঝড়ের কি এবং Shift স্তর একই; শুধু স্বরবর্ণ লেখার নিয়ম বদলায়।',
+        'গতি ও ঝড়ের অক্ষরের অবস্থান ও স্বরবর্ণ লেখার নিয়ম আলাদা।',
         'প্রতিটি কারের নিজস্ব কী আছে: ক + ি = কি।',
         `পূর্ণ স্বরবর্ণ লিখতে আগে হসন্ত (${hasant}), তারপর কার চাপুন: ্ + ি = ই; ্ + া = আ।`,
         `অ পাওয়া যায় ${inherent} চাপলে। হসন্ত দিয়ে যুক্তবর্ণও হয়: ক + ্ + ষ = ক্ষ।`,
@@ -136,7 +136,7 @@ function nativeLayout({ id, file }) {
     sourceSha256: sha256(path),
     publication: about.publication ?? null,
     arrangementId: about.arrangementId ?? null,
-    ...sharedInstructions(layout),
+    ...nativeInstructions(layout),
   };
 }
 
@@ -330,7 +330,7 @@ for (const [key, authorWorks] of [...byAuthor].sort((a, b) => excerptCount(b[1])
 
 // ---- Typing skill check: Kala's current prompt bank, reduced to the forms validated for these layouts.
 // bank_sha256 in a research package names the authoritative bank file, so its hash is kept here.
-const checkBankFile = join(app, 'learning-packs', 'kala.bn-typing-check', '1.4.1', 'prompts.json');
+const checkBankFile = join(app, 'learning-packs', 'kala.bn-typing-check', '1.4.2', 'prompts.json');
 const checkBank = read(checkBankFile);
 const checkHashes = new Set(layouts.map((l) => l.sourceSha256));
 const checkVariants = checkBank.variants.filter((v) => checkHashes.has(v.layout_hash));
@@ -379,6 +379,8 @@ write(join(srcData, 'chartypes.json'), charTypes);
 write(join(srcData, 'library.json'), library);
 write(join(srcData, 'source.json'), {
   importedAt: new Date().toISOString().slice(0, 10),
+  publication: 'kala-separate-publication-v1',
+  typingCheck: { version: checkBank.version, sourceSha256: sha256(checkBankFile) },
   packs: [
     { id: bnManifest.id, version: bnManifest.version, name: bnManifest.name, description: bnManifest.description, provenance: bnManifest.provenance },
     { id: enManifest.id, version: enManifest.version, name: enManifest.name, description: enManifest.description },
@@ -394,3 +396,23 @@ console.log(`Hands: ${hands.poses} poses, ${(hands.bytes / 1024).toFixed(0)} KiB
 console.log(`Imported from ${kala}`);
 console.log(`  ${layouts.length} layouts, ${Object.keys(paths).length} teaching paths, ${library.length} authors`);
 for (const [file, bytes] of Object.entries(sizes)) console.log(`  public/data/${file}  ${(bytes / 1024).toFixed(1)} KiB`);
+
+// These aliases were validated against complete native typing semantics by Kala.
+// Bind them to the exact imported bytes; imported/custom names grant no alias.
+const aliasFile = join(kala, 'plans/published-layouts/map-aliases.json');
+const aliases = read(aliasFile).validatedMetadataOnlyAliases;
+for (const item of nativeLayouts.filter(l => l.id.startsWith('kala-'))) {
+  const live = read(join(app, 'layout/bn', item.file));
+  const originalFile = join(kala, 'kala.BaselineTests/Fixtures/OriginalKalaLayouts', item.file);
+  const original = read(originalFile);
+  for (const key of new Set([...Object.keys(live), ...Object.keys(original)])) {
+    if (key === 'about' || key === 'comment') continue;
+    if (JSON.stringify(live[key]) !== JSON.stringify(original[key])) throw new Error(`Map alias semantics differ: ${item.id}/${key}`);
+  }
+  if (aliases[sha256(join(app, 'layout/bn', item.file))] !== sha256(originalFile)) throw new Error(`Unvalidated map alias: ${item.id}`);
+}
+write(join(srcData, 'mapping-aliases.json'), aliases);
+
+// Keep replay fixtures and immutable original references in this repository too.
+copyFileSync(join(kala, 'kala.BaselineTests/KalaJhor.tests.json'), join(root, 'tests/fixtures/KalaJhor.tests.json'));
+for (const name of ['KalaGoti', 'KalaJhor']) copyFileSync(join(kala, `kala.BaselineTests/Fixtures/OriginalKalaLayouts/${name}.json`), join(root, `tests/fixtures/Original${name}.json`));

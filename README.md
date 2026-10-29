@@ -4,8 +4,8 @@ Interactive Bangla and English touch-typing course for the browser, built with [
 
 It uses the current Kala desktop course content and logic:
 
-- **Courses and teaching paths** from `kala.bn-literature` 1.1.1 (the shared-layout revision of the 1.1.0 migration baseline) and `kala.en-touch` 1.0.0. Pack hashes and teaching-path layout hashes are verified on import.
-- **Layouts**: Kala Goti and Kala Jhor use the same provisional **Kala Layout** B01 arrangement (`shared-76c9b9dbfc689d0b`), with distinct hasant/sign and context-vowel typing styles. UniJoy and QWERTY remain available. The importer derives bilingual examples from actual key positions, including Goti `S D O A` and Jhor `D O A` for আমি.
+- **Courses and teaching paths** from `kala.bn-literature` 1.1.2 (bound to the published separate maps) and `kala.en-touch` 1.0.0. Pack hashes and teaching-path layout hashes are verified on import.
+- **Layouts**: Kala Goti (`A-18fe73cb912ae3f1`) and Kala Jhor (`D-e4a6be48881da590`) use their separate published arrangements, with native hasant/sign and context-vowel typing rules. UniJoy and QWERTY remain available. The importer derives bilingual examples from actual key positions, including Goti `K F X C` and Jhor `F X L` for আমি.
 - **Decoder**: `src/lib/composer.ts` is a port of `FixedLayoutManager` (pass-through and suppression rules, sequences, style D context vowels with run pairing, Backspace continuation).
 - **Scoring**: `src/lib/scoring.ts` ports `TextScoring` (`kala-grapheme-v1`). It uses .NET 8 grapheme units, so ক্ষ counts as two units, plus NFC and the same alignment tie-break. It deliberately does not use `Intl.Segmenter`.
 - **Key recipes**: `src/lib/recipe.ts` finds the shortest key sequence by replaying keys through the decoder, including Backspace recovery after a mistake.
@@ -27,7 +27,7 @@ It uses the current Kala desktop course content and logic:
 
 The interface is available in English and Bangla, with light and dark themes. It supports physical and on-screen keyboards, works at phone width and respects reduced motion.
 
-The **Research** link is the last navigation item; an entry card also appears at the end of the home page. This experimental pilot requires a physical keyboard. It reuses the composer, recipe finder, keyboard, study recorder and scorer, with its own local report format. It does not use the existing study upload endpoint or add course progress. See [the research protocol and report guide](RESEARCH.md). To refresh the two frozen maps from the sibling research repository, run `node scripts/import-shared-candidates.mjs ../kala-layout`.
+The **Research** link is the last navigation item; it is separate from ordinary courses. This experimental pilot requires a physical keyboard. It reuses the composer, recipe finder, keyboard, study recorder and scorer, with its own local report format. It does not use the existing study upload endpoint or add course progress. See [the research protocol and report guide](RESEARCH.md). To refresh the two frozen maps from the sibling research repository, run `node scripts/import-shared-candidates.mjs ../kala-layout`.
 
 ## Develop
 
@@ -52,7 +52,7 @@ npm run import:kala -- ../kala
 
 ## Prototype limits
 
-- The shared-map transition archives earlier Goti/Jhor positional progress in backups, keeps past sessions labelled with their mapping identity, and starts fresh key confidence. Reading bookmarks, preferences, UniJoy and QWERTY progress are preserved.
+- Progress follows verified map identities. Metadata-only aliases reuse compatible original-map progress; B01 progress remains archived. Sessions retain their original mapping identity. Reading bookmarks, preferences, UniJoy and QWERTY progress are preserved.
 - Progress uses `localStorage` with a downloadable JSON backup. IndexedDB, offline caching and desktop-profile import are not built yet.
 - Progression is simplified: 90% accuracy in the recall part completes a step. Kala's full adaptive planner and milestone checks are not ported.
 - Browser speed and accuracy are practice feedback. They are not validated as equivalent to desktop assessments.

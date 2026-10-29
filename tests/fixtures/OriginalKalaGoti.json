@@ -1,0 +1,485 @@
+{
+ "type": "fixed",
+ "version": "1.0",
+ "language": "bn",
+ "name": "Kala Goti",
+ "developer": "Kala — Bangla-DH Pure research",
+ "comment": "Kala Goti (Kala গতি): Bangla-DH Pure style A, UniJoy-style vowels. Arranged by computer search for the least finger effort on Wikipedia and newspaper text (Colemak Mod-DH effort model). Research: colemak-bangla in the Kala repository. Original layout maps: CC0 1.0 Universal; see NOTICE-KALA-LAYOUTS.txt.",
+ "layers": {
+  "normal": {
+   "32": " ",
+   "48": "০",
+   "49": "১",
+   "50": "২",
+   "51": "৩",
+   "52": "৪",
+   "53": "৫",
+   "54": "৬",
+   "55": "৭",
+   "56": "৮",
+   "57": "৯",
+   "65": "ব",
+   "66": "ছ",
+   "67": "ি",
+   "68": "র",
+   "69": "ল",
+   "70": "া",
+   "71": "।",
+   "72": "জ",
+   "73": "য়",
+   "74": "ক",
+   "75": "্",
+   "76": "ে",
+   "77": "ত",
+   "78": "য",
+   "79": "প",
+   "80": "হ",
+   "81": "গ",
+   "82": "ো",
+   "83": "ন",
+   "84": "ী",
+   "85": "স",
+   "86": "ু",
+   "87": "দ",
+   "88": "ম",
+   "89": "শ",
+   "90": "ট",
+   "186": ";",
+   "187": "=",
+   "188": ",",
+   "189": "-",
+   "190": ".",
+   "191": "/",
+   "192": "`",
+   "219": "[",
+   "220": "\\",
+   "221": "]",
+   "222": "'"
+  },
+  "shift": {
+   "32": " ",
+   "48": ")",
+   "49": "!",
+   "50": "@",
+   "51": "#",
+   "52": "$",
+   "53": "%",
+   "54": "^",
+   "55": "&",
+   "56": "*",
+   "57": "(",
+   "65": "ফ",
+   "66": "ঞ",
+   "67": "ূ",
+   "68": "খ",
+   "69": "ঠ",
+   "70": "অ",
+   "71": "ঢ়",
+   "72": "ড",
+   "73": "ড়",
+   "74": "চ",
+   "75": "ং",
+   "76": "ভ",
+   "77": "থ",
+   "78": "ধ",
+   "79": "ঁ",
+   "80": "ঙ",
+   "81": "ঃ",
+   "82": "ৈ",
+   "83": "ণ",
+   "84": "ৌ",
+   "85": "ষ",
+   "86": "ৃ",
+   "87": "ঝ",
+   "88": "ৎ",
+   "89": "ঘ",
+   "90": "ঢ",
+   "186": ":",
+   "187": "+",
+   "188": "<",
+   "189": "_",
+   "190": ">",
+   "191": "?",
+   "192": "~",
+   "219": "{",
+   "220": "|",
+   "221": "}",
+   "222": "\""
+  }
+ },
+ "combinations": {
+  "sequences": {
+   "্া": "আ",
+   "্ি": "ই",
+   "্ী": "ঈ",
+   "্ু": "উ",
+   "্ূ": "ঊ",
+   "্ৃ": "ঋ",
+   "্ে": "এ",
+   "্ৈ": "ঐ",
+   "্ো": "ও",
+   "্ৌ": "ঔ"
+  }
+ },
+ "rules": [
+  {
+   "pattern": "vowel",
+   "action": "pass_through"
+  },
+  {
+   "pattern": "digit",
+   "action": "pass_through"
+  },
+  {
+   "pattern": "punctuation",
+   "action": "pass_through"
+  },
+  {
+   "pattern": "other",
+   "action": "pass_through"
+  }
+ ],
+ "about": {
+  "schema": "kala-layout-about-v1",
+  "id": "kala-goti",
+  "name": {
+   "en": "Kala Goti",
+   "bn": "Kala গতি"
+  },
+  "meaning": "Goti (গতি): speed",
+  "tagline": {
+   "en": "Familiar UniJoy-style vowel typing on keys arranged by computer search for far less finger work.",
+   "bn": "পরিচিত ইউনিজয়-ধাঁচের স্বরবর্ণ টাইপিং, আর কী-গুলো কম্পিউটার-অনুসন্ধানে সাজানো, আঙুলের পরিশ্রম অনেক কম।"
+  },
+  "family": "Bangla-DH Pure",
+  "version": "1.0",
+  "released": "2026-10-11",
+  "style": {
+   "code": "A",
+   "name": {
+    "en": "UniJoy-style vowels",
+    "bn": "ইউনিজয়-ধাঁচের স্বরবর্ণ"
+   },
+   "description": "UniJoy-style (independent vowel = ্ + sign)",
+   "typingRule": {
+    "id": "hasant-sign",
+    "vowelKeys": "sign",
+    "independentVowel": "hasant then the sign (combinations.sequences)"
+   }
+  },
+  "howToType": {
+   "en": [
+    "Every vowel sign (kar) has its own key: ক + ি = কি.",
+    "A full vowel is hasant (K) and then its sign: ্ + ি = ই, ্ + া = আ (as in UniJoy).",
+    "অ is Shift+F.",
+    "Hasant also joins consonants: ক + ্ + ষ = ক্ষ."
+   ],
+   "bn": [
+    "প্রতিটি কার-চিহ্নের নিজস্ব কী আছে: ক + ি = কি।",
+    "পূর্ণ স্বরবর্ণ: আগে হসন্ত (K), তারপর কার: ্ + ি = ই, ্ + া = আ (ইউনিজয়ের মতো)।",
+    "অ পাওয়া যায় Shift+F চাপলে।",
+    "হসন্ত দিয়ে যুক্তবর্ণও হয়: ক + ্ + ষ = ক্ষ।"
+   ],
+   "examples": [
+    {
+     "text": "আমি",
+     "keys": "K F X C",
+     "presses": "্ া ম ি"
+    },
+    {
+     "text": "কী",
+     "keys": "J T",
+     "presses": "ক ী"
+    },
+    {
+     "text": "বই",
+     "keys": "A K C",
+     "presses": "ব ্ ি"
+    },
+    {
+     "text": "এবং",
+     "keys": "K L A Shift+K",
+     "presses": "্ ে ব ং"
+    },
+    {
+     "text": "তিনিই",
+     "keys": "M C S C K C",
+     "presses": "ত ি ন ি ্ ি"
+    },
+    {
+     "text": "আকাশ",
+     "keys": "K F J F Y",
+     "presses": "্ া ক া শ"
+    }
+   ]
+  },
+  "research": {
+   "summary": {
+    "en": "Bangla-DH Pure applies the Colemak Mod-DH effort model (how far each key is, which finger presses it, same-finger and awkward key pairs, and Shift) to Bangla. The computer arranged 52 Bangla symbols on 52 key positions, a space of 8.07 × 10^67 possible layouts, with 512 independent searches of 1,000,000 moves each: more than 512 million candidate layouts scored. It learned from 557,890 Wikipedia and newspaper articles (168.3 million words) and was tested on 67,216 articles it had never seen (20.0 million words).",
+    "bn": "Bangla-DH Pure গবেষণায় Colemak Mod-DH-এর আঙুল-পরিশ্রম মডেল (কী কত দূরে, কোন আঙুলে চাপতে হয়, একই আঙুলে পরপর বা অস্বস্তিকর কী-জোড়া, আর Shift) বাংলায় প্রয়োগ করা হয়েছে। ৫২টি বাংলা প্রতীককে ৫২টি কী-অবস্থানে সাজানোর ৮.০৭ × ১০^৬৭টি সম্ভাব্য বিন্যাসের মধ্যে কম্পিউটার ৫১২টি স্বাধীন অনুসন্ধান চালিয়েছে (প্রতিটিতে ১০,০০,০০০ ধাপ): ৫১.২ কোটির বেশি বিন্যাস যাচাই হয়েছে। ৫,৫৭,৮৯০টি উইকিপিডিয়া ও সংবাদপত্রের লেখা (১৬.৮ কোটি শব্দ) থেকে শিখে, আগে না-দেখা ৬৭,২১৬টি লেখায় (২.০ কোটি শব্দ) পরীক্ষা করা হয়েছে।"
+   },
+   "model": "Colemak Mod-DH effort model (key effort, same-finger and neighbour bigram penalties) with a Shift cost, J1 (RESEARCH_SPEC section 6.6); model-optimal ANSI fingering; space on the thumb",
+   "searchSpace": {
+    "symbols": 52,
+    "keyPositions": 52,
+    "possibleLayouts": "8.07e67"
+   },
+   "search": {
+    "method": "simulated annealing, steepest descent and iterated local search",
+    "independentRuns": 512,
+    "movesPerRun": 1000000,
+    "candidateLayoutsScored": 512000000,
+    "localSearchIterationsPerRun": 1000,
+    "polishAndConfirmationRuns": 9,
+    "runsReachingThisLayout": 36,
+    "cpuHours": 7.3
+   },
+   "training": [
+    {
+     "name": "bnwiki/train",
+     "label": "Bangla Wikipedia articles",
+     "labelBn": "বাংলা উইকিপিডিয়ার নিবন্ধ",
+     "articles": 171685,
+     "words": 58136180,
+     "typedCharacters": 390391661
+    },
+    {
+     "name": "newspaper/train",
+     "label": "Prothom Alo newspaper articles (many sections)",
+     "labelBn": "প্রথম আলো সংবাদপত্রের লেখা (নানা বিভাগ)",
+     "articles": 386205,
+     "words": 110175696,
+     "typedCharacters": 717543857
+    }
+   ],
+   "testing": [
+    {
+     "name": "bnwiki/heldout",
+     "label": "Bangla Wikipedia articles",
+     "labelBn": "বাংলা উইকিপিডিয়ার নিবন্ধ",
+     "articles": 19063,
+     "words": 6604805,
+     "typedCharacters": 44388875
+    },
+    {
+     "name": "newspaper/heldout",
+     "label": "Prothom Alo newspaper articles (many sections)",
+     "labelBn": "প্রথম আলো সংবাদপত্রের লেখা (নানা বিভাগ)",
+     "articles": 43022,
+     "words": 12286444,
+     "typedCharacters": 80039818
+    },
+    {
+     "name": "bard-novel/heldout",
+     "label": "BARD news articles that share no sentence with the newspaper set (never used in the search)",
+     "labelBn": "BARD সংবাদ-নিবন্ধ, সংবাদপত্রের সংগ্রহের সঙ্গে কোনো বাক্য মেলে না (অনুসন্ধানে কখনো ব্যবহৃত হয়নি)",
+     "articles": 5131,
+     "words": 1098306,
+     "typedCharacters": 7209251
+    }
+   ],
+   "objectiveWeights": {
+    "bnwiki/train": 0.5,
+    "newspaper/train": 0.5
+   },
+   "classification": "best found (RESEARCH_SPEC section 14)",
+   "certification": "The Wikipedia-trained version of style A was certified within 4.31 % of the lowest J1 any layout of its scope can reach (Phase 4 lower bound 1.7869); this layout, searched on Wikipedia + news, was not re-certified.",
+   "sensitivity": "Under 1,000 random settings of the model's parameters the Wikipedia-trained style A layout beat every market layout in 100 % of them.",
+   "reports": [
+    "colemak-bangla/results/mix-search/REPORT.md",
+    "colemak-bangla/results/phase3-crosscheck/REPORT.md",
+    "colemak-bangla/results/phase4/REPORT.md",
+    "colemak-bangla/results/kala-keyboards/README.md"
+   ]
+  },
+  "scores": {
+   "metric": "J1: modelled finger effort per typed character (lower is better)",
+   "rank": 2,
+   "score": 97.7,
+   "average": 1.8432,
+   "effortIndex": 65.9,
+   "lessEffortThanUniJoyPercent": 34.1,
+   "heldout": {
+    "wikipedia": {
+     "J1": 1.8689,
+     "keyEffort": 1.541,
+     "keyPairPenalty": 0.0313,
+     "shift": 0.2967,
+     "keystrokesPerCharacter": 1.0385
+    },
+    "newspaper": {
+     "J1": 1.83,
+     "keyEffort": 1.5225,
+     "keyPairPenalty": 0.0406,
+     "shift": 0.2669,
+     "keystrokesPerCharacter": 1.0423
+    },
+    "unseenNews": {
+     "J1": 1.8308,
+     "keyEffort": 1.5291,
+     "keyPairPenalty": 0.0403,
+     "shift": 0.2613,
+     "keystrokesPerCharacter": 1.0421
+    }
+   }
+  },
+  "scoreGuide": {
+   "en": "Effort (J1) is the modelled finger work per typed character, averaged over Wikipedia, newspaper and unseen news text; lower is better. Effort index: UniJoy = 100, so Kala Goti's 66 means about 34 % less finger work for the same text. Score: 100 for the lowest-effort layout tested; a layout with score 80 needs 25 % more work than it. Market layouts are scored at their best fingering. These are model scores, not measured typing speed.",
+   "bn": "পরিশ্রম (J1) হলো প্রতিটি টাইপ করা বর্ণে মডেল-হিসাবে আঙুলের কাজ, উইকিপিডিয়া, সংবাদপত্র ও আগে না-দেখা সংবাদের লেখার গড়; যত কম তত ভালো। পরিশ্রম-সূচক: ইউনিজয় = ১০০, তাই Kala গতি-এর ৬৬ মানে একই লেখায় প্রায় ৩৪ % কম আঙুলের কাজ। স্কোর: পরীক্ষিত সবচেয়ে কম পরিশ্রমের বিন্যাস ১০০; স্কোর ৮০ মানে তার চেয়ে ২৫ % বেশি কাজ। বাজারের বিন্যাসগুলো তাদের সবচেয়ে সুবিধাজনক আঙুল-বিন্যাসে মাপা হয়েছে। এগুলো মডেলের হিসাব, টাইপিং-গতির মাপ নয়।"
+  },
+  "leaderboard": {
+   "metric": "average held-out J1 (Wikipedia, newspaper, unseen news); lower is better",
+   "note": "Only fixed layouts are compared (phonetic layouts such as Avro Phonetic are not). Market layouts are the fixed layouts installed in Kala when the research ran.",
+   "entries": [
+    {
+     "rank": 1,
+     "name": "Kala Jhor",
+     "nameBn": "Kala ঝড়",
+     "kind": "kala",
+     "developer": "Kala — Bangla-DH Pure research",
+     "score": 100.0,
+     "average": 1.8,
+     "effortIndex": 64.3,
+     "lessEffortThanUniJoyPercent": 35.7,
+     "j1": {
+      "wikipedia": 1.8348,
+      "newspaper": 1.7822,
+      "unseenNews": 1.783
+     },
+     "fingering": "model-optimal (Colemak Mod-DH)"
+    },
+    {
+     "rank": 2,
+     "name": "Kala Goti",
+     "nameBn": "Kala গতি",
+     "kind": "kala",
+     "developer": "Kala — Bangla-DH Pure research",
+     "score": 97.7,
+     "average": 1.8432,
+     "effortIndex": 65.9,
+     "lessEffortThanUniJoyPercent": 34.1,
+     "j1": {
+      "wikipedia": 1.8689,
+      "newspaper": 1.83,
+      "unseenNews": 1.8308
+     },
+     "fingering": "model-optimal (Colemak Mod-DH)"
+    },
+    {
+     "rank": 3,
+     "name": "Windows Default",
+     "nameBn": "Windows Default",
+     "kind": "market",
+     "developer": "BrownVinci",
+     "score": 83.7,
+     "average": 2.1498,
+     "effortIndex": 76.8,
+     "lessEffortThanUniJoyPercent": 23.2,
+     "j1": {
+      "wikipedia": 2.1435,
+      "newspaper": 2.151,
+      "unseenNews": 2.1549
+     },
+     "fingering": "best of model-optimal and traditional fingering"
+    },
+    {
+     "rank": 4,
+     "name": "Probhat",
+     "nameBn": "Probhat",
+     "kind": "market",
+     "developer": "Shabab Mustafa",
+     "score": 70.4,
+     "average": 2.5553,
+     "effortIndex": 91.3,
+     "lessEffortThanUniJoyPercent": 8.7,
+     "j1": {
+      "wikipedia": 2.6022,
+      "newspaper": 2.5337,
+      "unseenNews": 2.5299
+     },
+     "fingering": "best of model-optimal and traditional fingering"
+    },
+    {
+     "rank": 5,
+     "name": "Munir Optima (uni)",
+     "nameBn": "Munir Optima (uni)",
+     "kind": "market",
+     "developer": "Shabab Mustafa",
+     "score": 69.6,
+     "average": 2.5855,
+     "effortIndex": 92.4,
+     "lessEffortThanUniJoyPercent": 7.6,
+     "j1": {
+      "wikipedia": 2.5898,
+      "newspaper": 2.5783,
+      "unseenNews": 2.5885
+     },
+     "fingering": "best of model-optimal and traditional fingering"
+    },
+    {
+     "rank": 6,
+     "name": "Bornona",
+     "nameBn": "Bornona",
+     "kind": "market",
+     "developer": "The Safeworks",
+     "score": 68.9,
+     "average": 2.6119,
+     "effortIndex": 93.4,
+     "lessEffortThanUniJoyPercent": 6.6,
+     "j1": {
+      "wikipedia": 2.6534,
+      "newspaper": 2.5923,
+      "unseenNews": 2.59
+     },
+     "fingering": "best of model-optimal and traditional fingering"
+    },
+    {
+     "rank": 7,
+     "name": "UniJoy",
+     "nameBn": "UniJoy",
+     "kind": "market",
+     "developer": "Kala's built-in UniJoy (Kala's Bijoy file has the same keys)",
+     "score": 64.3,
+     "average": 2.7974,
+     "effortIndex": 100.0,
+     "lessEffortThanUniJoyPercent": 0.0,
+     "j1": {
+      "wikipedia": 2.7976,
+      "newspaper": 2.7948,
+      "unseenNews": 2.7998
+     },
+     "fingering": "best of model-optimal and traditional fingering"
+    },
+    {
+     "rank": 8,
+     "name": "National (Jatiya)",
+     "nameBn": "National (Jatiya)",
+     "kind": "market",
+     "developer": "Bangladesh Computer Council (BCC)",
+     "score": 62.8,
+     "average": 2.8657,
+     "effortIndex": 102.4,
+     "lessEffortThanUniJoyPercent": -2.4,
+     "j1": {
+      "wikipedia": 2.8913,
+      "newspaper": 2.8503,
+      "unseenNews": 2.8554
+     },
+     "fingering": "best of model-optimal and traditional fingering"
+    }
+   ]
+  },
+  "limits": {
+   "en": [
+    "Scores come from the Colemak Mod-DH effort model on real text, not from timed typing; typing tests with people are the next research step.",
+    "The layout is the best found by the search (many independent runs reach it); it is not proven optimal.",
+    "Two layers only (normal and Shift): ZWNJ, ZWJ, ঽ, ॥, — and ৳ have no key yet (a third layer is planned)."
+   ],
+   "bn": [
+    "স্কোরগুলো আসল লেখার ওপর Colemak Mod-DH আঙুল-পরিশ্রম মডেলের হিসাব, ঘড়ি ধরে টাইপের মাপ নয়; মানুষকে দিয়ে টাইপিং পরীক্ষা গবেষণার পরের ধাপ।",
+    "এটি অনুসন্ধানে পাওয়া সেরা বিন্যাস (বহু স্বাধীন অনুসন্ধান একই ফলে পৌঁছেছে); গাণিতিকভাবে সর্বোত্তম প্রমাণিত নয়।",
+    "কেবল দুটি স্তর (সাধারণ ও Shift): ZWNJ, ZWJ, ঽ, ॥, — ও ৳-এর কী এখনো নেই (তৃতীয় স্তর পরিকল্পনায় আছে)।"
+   ]
+  }
+ }
+}

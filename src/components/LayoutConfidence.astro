@@ -2,17 +2,9 @@
 import T from './T.astro';
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
-<p class="muted narrow">
-  <T en="About one-third less modeled finger effort than UniJoy. Common letters within easy reach. One key map, with two ways to type vowels."
-     bn="ইউনিজয়ের তুলনায় মডেলের হিসাবে প্রায় এক-তৃতীয়াংশ কম আঙুলের পরিশ্রম। প্রচলিত বর্ণগুলো সহজ নাগালে। একই কি-বিন্যাসে স্বরবর্ণ লেখার দুটি সহজ নিয়ম।" />
-</p>
-<p class="small muted evidence">
-  <strong><T en="4 billion search proposals" bn="৪০০ কোটি অনুসন্ধান-প্রস্তাব" /></strong>
-  <span aria-hidden="true"> · </span>
-  <strong><T en="Local certificate: 45,526 alternatives checked" bn="স্থানীয় সনদ: ৪৫,৫২৬টি বিকল্প বিন্যাস যাচাই" /></strong>
-  <span aria-hidden="true"> · </span>
-  <a href={`${base}about/#layout-research`}><T en="See the research" bn="গবেষণা দেখুন" /></a>
-</p>
+<p class="muted narrow"><T en="Kala Goti and Kala Jhor use distinct research-designed key maps for lower modeled finger effort. Goti uses hasant plus a sign for a full vowel; Jhor uses context and repeated-key vowel entry."
+ bn="মডেলের হিসাবে আঙুলের পরিশ্রম কমানোর জন্য কালা গতি ও কালা ঝড়ের অক্ষরের অবস্থান বেছে নেওয়া হয়েছে। লেআউট দুটির অবস্থান আলাদা। গতিতে হসন্তের পরে কার চেপে পূর্ণ স্বরবর্ণ লিখুন; ঝড়ে প্রসঙ্গ ও একই অক্ষর বারবার চাপার নিয়মে স্বরবর্ণ লেখা হয়।" /></p>
+<p class="small"><a href={`${base}about/#layout-research`}><T en="Maps and research method" bn="ম্যাপ ও গবেষণার পদ্ধতি" /></a></p>
 <style>
   .evidence { margin-top: 12px; line-height: 1.8; }
 </style>

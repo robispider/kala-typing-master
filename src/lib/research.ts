@@ -49,6 +49,7 @@ export function candidateLayout(label: Candidate, style: Style): Layout {
     normal: { ...template.normal }, shift: { ...template.shift },
     // Original examples refer to original positions: never present those as candidate instructions.
     howToType: null, sourceSha256: saved.physicalMapSha256,
+    publication: 'kala-shared-publication-v1', arrangementId: saved.id,
   };
   const occupied = new Set<string>();
   for (const [symbol, slot] of Object.entries(saved.symbols)) {

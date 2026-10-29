@@ -1,6 +1,6 @@
-# B01 shared arrangement: Goti/Jhor physical pilot
+# Historical B01 shared arrangement: Goti/Jhor physical pilot
 
-The Research page now holds B01's physical positions fixed and compares Goti versus Jhor entry rules. B01 is the provisional best-found arrangement, not a proven global optimum. B02's rare two-sign exchange is retained as historical map evidence, not a main participant condition. This pilot is separate from ordinary courses and the existing 4:20 typing check. Results are exploratory observations from the typist, not a measured validation of the search formula or a claim about other people. Feedback can guide a default without implying one style suits everyone.
+The Research page now holds B01's physical positions fixed and compares Goti versus Jhor entry rules. This experimental B01 map is separate from the published Goti/Jhor course maps. Research history and interpretation live at https://robispider.github.io/kala-layout/en/publication/. B02's rare two-sign exchange is retained as historical map evidence, not a main participant condition. This pilot is separate from ordinary courses and the existing 4:20 typing check. Results are exploratory observations from the typist, not a measured validation of the search formula or a claim about other people. Feedback can guide a default without implying one style suits everyone.
 
 ## Run and copy
 

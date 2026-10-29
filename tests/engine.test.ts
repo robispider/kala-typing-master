@@ -81,7 +81,7 @@ test('recipes replay to the target and match authored examples', () => {
   }
   const goti = layout('kala-goti');
   const steps = recipeFor(FixedComposer.create(goti, types), 'আমি')!;
-  assert.deepEqual(steps.map((s) => String.fromCharCode(s.vk)), ['S', 'D', 'O', 'A']);
+  assert.deepEqual(steps.map((s) => String.fromCharCode(s.vk)), ['K', 'F', 'X', 'C']);
 });
 
 test('scoring: worked checks from 05-ASSESSMENT', () => {

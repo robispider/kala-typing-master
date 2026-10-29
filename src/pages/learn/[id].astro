@@ -289,8 +289,10 @@ const moduleAt = (unitIds: string[]) => path.modules.filter((m) => m.targetUnits
   .tiny {
     font-size: 0.76rem;
   }
+  .side, .journey { min-width: 0; }
+  .kbwrap { overflow-x: auto; }
   .kbwrap :global(.kb) {
-    --u: min(31px, calc((100vw - 76px) / 15.2));
+    --u: min(31px, calc((100vw - 116px) / 16.8));
   }
   .legend {
     display: flex;
@@ -335,7 +337,7 @@ const moduleAt = (unitIds: string[]) => path.modules.filter((m) => m.targetUnits
   }
   @media (max-width: 980px) {
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
     .side {
       position: static;

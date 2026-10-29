@@ -2,6 +2,8 @@
 // Saves report failure visibly; a JSON backup can be downloaded and restored.
 
 import layouts from '../data/layouts.json' with { type: 'json' };
+import aliases from '../data/mapping-aliases.json' with { type: 'json' };
+const canonical = (hash: string) => (aliases as Record<string, string>)[hash] ?? hash;
 
 const currentHashes = Object.fromEntries(layouts.map((layout) => [layout.id, layout.sourceSha256]));
 const originalHashes: Record<string, string> = {
@@ -74,7 +76,7 @@ export const onSave = (fn: Listener) => listeners.add(fn);
 export function upgradeProgress(raw: unknown): Progress {
   const base = fresh();
   if (!raw || typeof raw !== 'object') return base;
-  const p = raw as Partial<Progress>;
+  const p = structuredClone(raw) as Partial<Progress>;
   if (p.schema !== SCHEMA) return base;
   const progress = { ...base, ...p, settings: { ...base.settings, ...p.settings } };
   for (const [id, originalHash] of Object.entries(originalHashes)) {
@@ -83,14 +85,27 @@ export function upgradeProgress(raw: unknown): Progress {
     for (const session of progress.sessions) {
       if (session.layout === id) session.mappingHash ??= previousHash;
     }
-    if (previous && previousHash !== currentHashes[id]) {
-      progress.layoutHistory ??= {};
-      progress.layoutHistory[`${id}:${previousHash}`] = { ...previous, mappingHash: previousHash };
-      progress.layouts[id] = {
-        mappingHash: currentHashes[id], completed: [], best: {}, units: {}, keyErrors: {},
-        ...(previous.reading ? { reading: previous.reading } : {}),
-      };
+    if (!previous) continue;
+    if (canonical(previousHash) === canonical(currentHashes[id])) {
+      previous.mappingHash = currentHashes[id];
+      continue;
     }
+    progress.layoutHistory ??= {};
+    const key = `${id}:${previousHash}`;
+    const archived = { ...previous, mappingHash: previousHash };
+    if (progress.layoutHistory[key] && JSON.stringify(progress.layoutHistory[key]) !== JSON.stringify(archived)) {
+      // Preserve an earlier snapshot too; no merge may discard positional evidence.
+      let n = 1;
+      while (progress.layoutHistory[`${key}:${n}`]) n++;
+      progress.layoutHistory[`${key}:${n}`] = structuredClone(progress.layoutHistory[key]);
+    }
+    progress.layoutHistory[key] = structuredClone(archived);
+    const compatible = Object.entries(progress.layoutHistory).find(([key, value]) =>
+      key.startsWith(`${id}:`) && value.mappingHash && canonical(value.mappingHash) === canonical(currentHashes[id]));
+    progress.layouts[id] = compatible ? { ...structuredClone(compatible[1]), mappingHash: currentHashes[id] } : {
+      mappingHash: currentHashes[id], completed: [], best: {}, units: {}, keyErrors: {},
+    };
+    if (previous.reading) progress.layouts[id].reading = structuredClone(previous.reading);
   }
   return progress;
 }

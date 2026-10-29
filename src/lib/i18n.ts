@@ -12,6 +12,9 @@ export function setLang(next: Lang) {
   document.documentElement.lang = next;
   const p = load();
   p.lang = next;
+  document.querySelectorAll<HTMLAnchorElement>('[data-research-link]').forEach(link => {
+    link.href = link.href.replace(/\/(en|bn)\//, `/${next}/`);
+  });
   save(p);
   document.dispatchEvent(new CustomEvent('kala:lang', { detail: next }));
 }
